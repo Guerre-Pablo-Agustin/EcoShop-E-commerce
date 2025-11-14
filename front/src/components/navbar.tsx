@@ -10,10 +10,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useCartItems } from "@/store/cart.store";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+
+  //datos del carrito
+  const items = useCartItems();
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const navigation = [
     { name: "Mujer", href: "/mujer" },
@@ -143,7 +148,7 @@ const Navbar = () => {
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-5 w-5" />
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    0
+                    {totalItems}
                   </span>
                 </Button>
               </Link>

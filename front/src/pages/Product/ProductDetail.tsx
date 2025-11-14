@@ -5,10 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, ShoppingCart, Leaf } from "lucide-react";
 import { ImpactChart } from "@/components/Products/ImpactChart";
 import { ImpactMetrics } from "@/components/Products/ImpactMetrics";
+import { useCartActions } from "@/store/cart.store";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
+
+
+  const { addItem } = useCartActions();
 
   if (!product) {
     return (
@@ -65,7 +69,7 @@ const ProductDetail = () => {
             </div>
 
             <div className="flex gap-4">
-              <Button size="lg" className="flex-1">
+              <Button size="lg" className="flex-1 cursor-pointer" onClick={() => addItem(product, 1)}>
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 Añadir al Carrito
               </Button>
