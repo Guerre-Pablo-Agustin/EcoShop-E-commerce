@@ -8,6 +8,9 @@ import NotFound from "./pages/NotFound";
 import ProductDetail from "./pages/Product/ProductDetail";
 import MainLayout from "./layout/MainLayout";
 import ShoppingCartPage from "./pages/ShoppingCartPage/ShoppingCartPage";
+import LoginPage from "./pages/Login/LoginPage";
+import { routes } from "./lib/routes";
+import StorePage from "./pages/Store/StorePage";
 
 const queryClient = new QueryClient();
 
@@ -19,9 +22,11 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route element={<MainLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/carrito" element={<ShoppingCartPage />} />
+            <Route path={routes.home} element={<Index />} />
+            <Route path={routes.productDetail} element={<ProductDetail />} />
+            <Route path={routes.shoppingCart} element={<ShoppingCartPage />} />
+            <Route path={routes.login} element={<LoginPage />} />
+            <Route path={routes.store} element={<StorePage />} />
             {/* Añade más rutas aquí según necesites */}
           </Route>
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
