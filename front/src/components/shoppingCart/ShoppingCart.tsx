@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { useCartStore, useCartActions } from "@/store/cart.store";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Leaf } from "lucide-react";
+import { routes } from "@/lib/routes";
 
 const ShoppingCart = () => {
   const cart = useCartStore((state) => state.cart);
@@ -75,7 +76,7 @@ const ShoppingCart = () => {
                             <div className="flex gap-4">
                               <Link to={`/product/${item.product.id}`}>
                                 <img
-                                  src={item.product.image}
+                                  src={item.product.image[0]}
                                   alt={item.product.name}
                                   className="w-20 h-20 object-cover rounded-lg"
                                 />
@@ -161,7 +162,7 @@ const ShoppingCart = () => {
                       <div className="flex gap-3">
                         <Link to={`/product/${item.product.id}`}>
                           <img
-                            src={item.product.image}
+                            src={item.product.image[0]}
                             alt={item.product.name}
                             className="w-20 h-20 object-cover rounded-lg"
                           />
@@ -298,10 +299,13 @@ const ShoppingCart = () => {
                   </div>
                 </div>
 
+              <Link to={routes.checkout}>
                 <Button className="w-full" size="lg">
                   Proceder al pago
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
+              </Link>
+              
 
                 <div className="space-y-2 text-xs text-muted-foreground text-center pt-2">
                   <p>🔒 Pago 100% seguro</p>

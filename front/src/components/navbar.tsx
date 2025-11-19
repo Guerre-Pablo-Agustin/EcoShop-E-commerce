@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useCartItems } from "@/store/cart.store";
+import { routes } from "@/lib/routes";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,10 +22,10 @@ const Navbar = () => {
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const navigation = [
-    { name: "Mujer", href: "/mujer" },
-    { name: "Hombre", href: "/hombre" },
-    { name: "Accesorios", href: "/accesorios" },
-    { name: "Hogar", href: "/hogar" },
+    { name: "Mujer", href: routes.mujer },
+    { name: "Hombre", href: routes.hombre },
+    { name: "Accesorios", href: routes.accesorios },
+    { name: "Hogar", href: routes.hogar }
   ];
 
   return (
@@ -61,14 +62,14 @@ const Navbar = () => {
                     ))}
                     <div className="border-t pt-4 mt-4">
                       <Link
-                        to="/tiendas"
+                        to={routes.store}
                         className="block text-lg font-medium hover:text-primary transition-colors mb-3"
                         onClick={() => setIsOpen(false)}
                       >
-                        Tiendas
+                        Tienda
                       </Link>
                       <Link
-                        to="/sobre-nosotros"
+                        to={routes.about}
                         className="block text-lg font-medium hover:text-primary transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
@@ -81,7 +82,7 @@ const Navbar = () => {
 
               {/* Logo - Visible only on Mobile */}
               <Link 
-                to="/" 
+                to={routes.home}
                 className="flex items-center gap-2 lg:hidden"
               >
                 <Leaf className="h-6 w-6 text-primary" />
@@ -104,7 +105,7 @@ const Navbar = () => {
 
             {/* Logo - Centered on Desktop only */}
             <Link 
-              to="/" 
+              to={routes.home}
               className="hidden lg:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2"
             >
               <Leaf className="h-6 w-6 text-primary" />
@@ -115,12 +116,12 @@ const Navbar = () => {
             <div className="flex items-center gap-1 md:gap-2">
               {/* Desktop Links */}
               <div className="hidden md:flex items-center gap-2">
-                <Link to="/tiendas">
+                <Link to={routes.store}>
                   <Button variant="ghost" size="sm" className="text-xs uppercase">
-                    Tiendas
+                    Tienda
                   </Button>
                 </Link>
-                <Link to="/sobre-nosotros">
+                <Link to={routes.about}>
                   <Button variant="ghost" size="sm" className="text-xs uppercase">
                     Sobre Nosotros
                   </Button>
@@ -137,14 +138,14 @@ const Navbar = () => {
               </Button>
               
               {/* User Account */}
-              <Link to="/cuenta" className="hidden sm:block">
+              <Link to={routes.login}>
                 <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
               
               {/* Shopping Cart */}
-              <Link to="/carrito">
+              <Link to={routes.shoppingCart}>
                 <Button variant="ghost" size="icon" className="relative">
                   <ShoppingCart className="h-5 w-5" />
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">
