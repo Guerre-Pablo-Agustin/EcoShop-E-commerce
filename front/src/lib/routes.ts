@@ -14,4 +14,14 @@ export const routes = {
   hombre: "/hombre",
   accesorios: "/accesorios",
   hogar: "/hogar",
+
+
+  //dashboard
+  dashboard: "/dashboard",
+  dashboardProducts: "/dashboard/products",
+  dashboardVentas: "/dashboard/sales",
+  dashboardInventario: "/dashboard/inventory",
+  dashboardImpacto: "/dashboard/impact",
+  dashboardReportes: "/dashboard/reports",
+  dashboardClientes: "/dashboard/clients",
 };

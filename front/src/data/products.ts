@@ -1,3 +1,12 @@
+interface Brand {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  website: string;
+  sustentabilityStory: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -11,6 +20,8 @@ export interface Product {
     waterUsage: number; // liters
     transportDistance: number; // km
   };
+  stock: number;
+  brand: Brand,
   certifications: string[];
   materials: Array<{
     name: string;
@@ -52,6 +63,15 @@ export const products: Product[] = [
     },
     rating: 92,
     reviews: 1127,
+    stock: 100,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
   {
     id: "2",
@@ -81,6 +101,15 @@ export const products: Product[] = [
     },
     rating: 88,
     reviews: 856,
+    stock: 100,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
   {
     id: "3",
@@ -110,6 +139,15 @@ export const products: Product[] = [
     },
     rating: 85,
     reviews: 643,
+    stock: 50,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
   {
     id: "4",
@@ -139,6 +177,15 @@ export const products: Product[] = [
     },
     rating: 94,
     reviews: 1532,
+    stock: 10,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
   {
     id: "5",
@@ -169,6 +216,15 @@ export const products: Product[] = [
     },
     rating: 96,
     reviews: 2341,
+    stock: 80,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
   {
     id: "6",
@@ -199,5 +255,15 @@ export const products: Product[] = [
     },
     rating: 87,
     reviews: 912,
+    stock: 0,
+    brand: {
+      id: "1",
+      name: "EcoShop",
+      logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+      website: "https://ecoshop.com",
+      sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+    },
   },
+  
 ];

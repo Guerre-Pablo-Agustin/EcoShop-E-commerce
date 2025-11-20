@@ -32,6 +32,13 @@ const ProductDetail = () => {
 
   const { addItem } = useCartActions();
 
+  const colorStock = (stock: number) => {
+    if (stock > 90) return "text-green-600";
+    if (stock > 51 && stock <= 90) return "text-orange-600";
+    if (stock === 0) return "text-gray-500";
+    return "text-red-600";
+  };
+
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -106,6 +113,28 @@ const ProductDetail = () => {
                 <span className="text-sm font-normal text-gray-500 ml-2">
                   IVA incluido
                 </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium text-gray-500">
+                  Disponible:
+                </span>
+                <span
+                  className={`text-sm font-medium ${colorStock(product.stock)}`}
+                >
+                  {product.stock > 0 ? product.stock : "Sin Stock"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm font-medium text-gray-500">
+                  Fabricado por: {product.brand.name}
+                </span>
+                <div className="aspect-square rounded-2xl overflow-hidden bg-linear-to-br from-emerald-50 to-green-100 shadow-lg w-16 h-16">
+                  <img
+                    src={product.brand.logo}
+                    alt={product.name}
+                    className="w-16 h-16 object-cover"
+                  />
+                </div>
               </div>
             </div>
 
@@ -275,7 +304,8 @@ const ProductDetail = () => {
                 -{product.impact.carbonFootprint}%
               </div>
               <p className="text-sm text-gray-600">
-                {product.impact.carbonFootprint}% menos emisiones que botellas plásticas
+                {product.impact.carbonFootprint}% menos emisiones que botellas
+                plásticas
               </p>
             </div>
 
@@ -333,7 +363,7 @@ const ProductDetail = () => {
                 {product.impact.transportDistance}
               </div>
               <p className="text-sm text-gray-600">
-               Todos los materiales son renovables o reciclados
+                Todos los materiales son renovables o reciclados
               </p>
             </div>
 

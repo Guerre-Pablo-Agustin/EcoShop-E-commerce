@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useCartItems } from "@/store/cart.store";
 import { routes } from "@/lib/routes";
+import logoImage from "../assets/EcoShop_Logo.svg";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -85,8 +86,11 @@ const Navbar = () => {
                 to={routes.home}
                 className="flex items-center gap-2 lg:hidden"
               >
-                <Leaf className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold">ECOCOMMERCE</span>
+                <img
+                    src={logoImage}
+                    alt="EcoShop Logo"
+                    className="w-36 h-22 object-contain"
+                  />
               </Link>
 
               {/* Desktop Navigation */}
@@ -108,8 +112,11 @@ const Navbar = () => {
               to={routes.home}
               className="hidden lg:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2"
             >
-              <Leaf className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold">ECOCOMMERCE</span>
+                <img
+                    src={logoImage}
+                    alt="EcoShop Logo"
+                    className="w-48 h-32 object-contain"
+                  />
             </Link>
 
             {/* Right Actions */}

@@ -12,6 +12,8 @@ import LoginPage from "./pages/Login/LoginPage";
 import { routes } from "./lib/routes";
 import StorePage from "./pages/Store/StorePage";
 import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
+import DashboardLayout from "./layout/DashboardLayout";
+import IndexDasboard from "./pages/Dahboard/IndexDasboard";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +24,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Rutas públicas con MainLayout */}
           <Route element={<MainLayout />}>
             <Route path={routes.home} element={<Index />} />
             <Route path={routes.productDetail} element={<ProductDetail />} />
@@ -29,9 +32,16 @@ const App = () => (
             <Route path={routes.login} element={<LoginPage />} />
             <Route path={routes.store} element={<StorePage />} />
             <Route path={routes.checkout} element={<CheckoutPage />} />
-            {/* Añade más rutas aquí según necesites */}
           </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* Rutas del dashboard con DashboardLayout */}
+          <Route element={<DashboardLayout />}>
+            <Route path={routes.dashboard} element={<IndexDasboard />} />
+            {/* Agrega más rutas del dashboard aquí */}
+            {/* <Route path={routes.dashboardUsers} element={<UsersPage />} /> */}
+          </Route>
+
+          {/* Ruta 404 - debe ir al final */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
