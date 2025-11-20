@@ -25,48 +25,49 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { routes } from "@/lib/routes";
 
 const navigationItems = [
   {
     title: "Dashboard",
     icon: LayoutDashboard,
-    url: "#",
+    url: routes.dashboard,
     active: true,
   },
   {
     title: "Ventas",
     icon: ShoppingCart,
-    url: "#",
+    url: routes.dashboardVentas,
     active: false,
   },
   {
     title: "Productos",
     icon: Package,
-    url: "#",
+    url: routes.dashboardProducts,
     active: false,
   },
   {
     title: "Inventario",
     icon: Archive,
-    url: "#",
+    url: routes.dashboardInventario,
     active: false,
   },
   {
     title: "Impacto Ambiental",
     icon: Leaf,
-    url: "#",
+    url: routes.dashboardImpacto,
     active: false,
   },
   {
     title: "Reportes",
     icon: BarChart3,
-    url: "#",
+    url: routes.dashboardReportes,
     active: false,
   },
   {
     title: "Clientes",
     icon: Users,
-    url: "#",
+    url: routes.dashboardClientes,
     active: false,
   },
 ];
@@ -87,13 +88,11 @@ export default function EcoShopSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
-                </div>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ArgTech</span>
-                  <span className="truncate text-xs">Devs</span>
-                </div>
+               <img
+                    src={logoImage}
+                    alt="EcoShop Logo"
+                    className="w-36 h-22 object-contain"
+                  />
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

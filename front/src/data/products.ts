@@ -33,6 +33,7 @@ export interface Product {
   };
   rating: number;
   reviews: number;
+  isActive: boolean;
 }
 
 export const products: Product[] = [
@@ -72,6 +73,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: true,
   },
   {
     id: "2",
@@ -110,6 +112,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: true,
   },
   {
     id: "3",
@@ -148,6 +151,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: true,
   },
   {
     id: "4",
@@ -186,6 +190,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: false,
   },
   {
     id: "5",
@@ -225,6 +230,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: true,
   },
   {
     id: "6",
@@ -264,6 +270,7 @@ export const products: Product[] = [
       website: "https://ecoshop.com",
       sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
     },
+    isActive: false,
   },
   
 ];
