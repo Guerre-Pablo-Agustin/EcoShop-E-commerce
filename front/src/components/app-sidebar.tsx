@@ -10,6 +10,7 @@ import {
   BarChart3,
   Users,
   Command,
+  ShoppingBag,
 } from "lucide-react";
 import logoImage from "../assets/EcoShop_Logo.svg";
 import { NavMain } from "@/components/nav-main"
@@ -70,6 +71,12 @@ const navigationItems = [
     url: routes.dashboardClientes,
     active: false,
   },
+  {
+    title: "Marcas",
+    icon: ShoppingBag,
+    url: routes.dashboardMarcas,
+    active: false,
+  }
 ];
 
 const user = {

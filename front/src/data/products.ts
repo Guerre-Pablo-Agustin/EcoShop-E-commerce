@@ -1,4 +1,4 @@
-interface Brand {
+export interface Brand {
   id: string;
   name: string;
   logo: string;
@@ -274,3 +274,31 @@ export const products: Product[] = [
   },
   
 ];
+
+
+export const brands : Brand[] = [
+  {
+    id: "1",
+    name: "EcoShop",
+    logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+    website: "https://ecoshop.com",
+    sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+  },
+  {
+    id: "2",
+    name: "EcoShop",
+    logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+    website: "https://ecoshop.com",
+    sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+  },
+  {
+    id: "3",
+    name: "EcoShop",
+    logo: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus.",
+    website: "https://ecoshop.com",
+    sustentabilityStory: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed non risus."
+  },
+]

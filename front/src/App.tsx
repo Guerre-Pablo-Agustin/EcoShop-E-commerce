@@ -15,6 +15,8 @@ import CheckoutPage from "./pages/CheckoutPage/CheckoutPage";
 import DashboardLayout from "./layout/DashboardLayout";
 import IndexDasboard from "./pages/Dahboard/IndexDasboard";
 import MainProducts from "./pages/Dahboard/Productos/main";
+import IndexBrands from "./pages/Dahboard/Brands/indexBrands";
+import NewBrand from "./pages/Dahboard/Brands/newBrand";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
             <Route path={routes.dashboard} element={<IndexDasboard />} />
             {/* Agrega más rutas del dashboard aquí */}
             <Route path={routes.dashboardProducts} element={<MainProducts />} />
+            <Route path={routes.dashboardMarcas} element={<IndexBrands />} />
+            <Route path={routes.dashboardMarcasNuevo} element={<NewBrand />} />
           </Route>
 
           {/* Ruta 404 - debe ir al final */}

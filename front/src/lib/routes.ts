@@ -24,4 +24,6 @@ export const routes = {
   dashboardImpacto: "/dashboard/impact",
   dashboardReportes: "/dashboard/reports",
   dashboardClientes: "/dashboard/clients",
+  dashboardMarcas: "/dashboard/brands",
+  dashboardMarcasNuevo: "/dashboard/brands/new",
 };
