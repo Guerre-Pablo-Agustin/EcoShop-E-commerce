@@ -224,8 +224,9 @@ export default function AuthForm() {
               </Button>
             </form>
 
+
             {/* Divider */}
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-200"></div>
               </div>
@@ -234,10 +235,10 @@ export default function AuthForm() {
                   O continúa con
                 </span>
               </div>
-            </div>
+            </div> */}
 
             {/* Social Login */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 className="w-full border-gray-300 hover:bg-gray-50"
@@ -277,7 +278,7 @@ export default function AuthForm() {
                 </svg>
                 Microsoft
               </Button>
-            </div>
+            </div>  */}
 
             {/* Footer Links */}
             <div className="pt-4 space-y-2 text-center">
