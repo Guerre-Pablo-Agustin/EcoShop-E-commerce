@@ -76,7 +76,7 @@ const navigationItems = [
     icon: ShoppingBag,
     url: routes.dashboardMarcas,
     active: false,
-  }
+  },
 ];
 
 const user = {
