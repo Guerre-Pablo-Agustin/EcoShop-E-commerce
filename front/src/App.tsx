@@ -17,6 +17,9 @@ import IndexDasboard from "./pages/Dahboard/IndexDasboard";
 import MainProducts from "./pages/Dahboard/Productos/main";
 import IndexBrands from "./pages/Dahboard/Brands/indexBrands";
 import NewBrand from "./pages/Dahboard/Brands/newBrand";
+import EditBrand from "./pages/Dahboard/Brands/editBrand";
+import NewProduct from "./pages/Dahboard/Productos/newProduct";
+import EditProduct from "./pages/Dahboard/Productos/editProduct";
 import PageGreenMetrics from "./pages/Dahboard/GreenMetrics/PageGreenMetrics";
 
 const queryClient = new QueryClient();
@@ -44,11 +47,23 @@ const App = () => (
             {/* Agrega más rutas del dashboard aquí */}
             <Route path={routes.dashboardProducts} element={<MainProducts />} />
             <Route
+              path={routes.dashboardProductosNuevo}
+              element={<NewProduct />}
+            />
+            <Route
+              path={routes.dashboardProductosEditar}
+              element={<EditProduct />}
+            />
+            <Route
               path={routes.dashboardImpacto}
               element={<PageGreenMetrics />}
             />
             <Route path={routes.dashboardMarcas} element={<IndexBrands />} />
             <Route path={routes.dashboardMarcasNuevo} element={<NewBrand />} />
+            <Route
+              path={routes.dashboardMarcasEditar}
+              element={<EditBrand />}
+            />
           </Route>
 
           {/* Ruta 404 - debe ir al final */}

@@ -11,10 +11,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Product } from "@/data/products";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+
+interface Props {
+  product: Product;
+}
 
 const brandSchema = z.object({
   id: z.string(),
@@ -88,43 +93,14 @@ const formProductSchema = z.object({
   isActive: z.boolean(),
 });
 
-const NuevoProducto = () => {
+const EditProductForm = ({ product }: Props) => {
   const form = useForm<z.infer<typeof formProductSchema>>({
     resolver: zodResolver(formProductSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-      image: [],
-      category: "",
-      impact: {
-        carbonFootprint: 0,
-        waterUsage: 0,
-        transportDistance: 0,
-        recyclable: 0,
-      },
-      stock: 0,
-      brand: {
-        id: "",
-        name: "",
-        logo: "",
-        description: "",
-        website: "",
-        sustentabilityStory: "",
-      },
-      certifications: [],
-      materials: [],
-      origin: {
-        text: "",
-      },
-      rating: 0,
-      isActive: true,
-    },
+    defaultValues: product,
   });
 
-  const handleSubmit = (values: z.infer<typeof formProductSchema>) => {
-    console.log("Nuevo producto creado:", values);
-    // Aquí iría la lógica para crear el producto
+  const handleSubmit = () => {
+    console.log("Form submitted successfully:", form.getValues());
     form.reset();
   };
 
@@ -132,7 +108,7 @@ const NuevoProducto = () => {
     <Card className="p-6 w-full">
       <CardContent>
         <CardHeader>
-          <h2 className="text-2xl font-bold mb-4">Registrar Nuevo Producto</h2>
+          <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
         </CardHeader>
 
         <Form {...form}>
@@ -311,7 +287,7 @@ const NuevoProducto = () => {
               )}
             />
 
-            {/* Impacto Ambiental */}
+             {/* Impacto Ambiental */}
             <Card className="mt-4" >
                 <CardHeader>
                   <CardTitle>Impacto Ambiental</CardTitle>
@@ -422,7 +398,6 @@ const NuevoProducto = () => {
             </div>
             </Card>
 
-
             {/* Estado Activo */}
             <FormField
               control={form.control}
@@ -455,7 +430,7 @@ const NuevoProducto = () => {
               >
                 Cancelar
               </Button>
-              <Button type="submit">Crear Producto</Button>
+              <Button type="submit">Guardar Cambios</Button>
             </div>
           </form>
         </Form>
@@ -464,4 +439,4 @@ const NuevoProducto = () => {
   );
 };
 
-export default NuevoProducto;
+export default EditProductForm;

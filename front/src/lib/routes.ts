@@ -1,13 +1,12 @@
 export const routes = {
-  //principales  
+  //principales
   home: "/",
   store: "/store",
   productDetail: "/product/:id",
   shoppingCart: "/cart",
   login: "/auth",
-  about :"/about",
+  about: "/about",
   checkout: "/checkout",
-
 
   //filtros
   mujer: "/mujer",
@@ -15,15 +14,30 @@ export const routes = {
   accesorios: "/accesorios",
   hogar: "/hogar",
 
-
   //dashboard
   dashboard: "/dashboard",
+  //dashboard/products
   dashboardProducts: "/dashboard/products",
+  dashboardProductosNuevo: "/dashboard/products/new",
+  dashboardProductosEditar: "/dashboard/products/edit/:id",
+
+  //dashboard/sales
   dashboardVentas: "/dashboard/sales",
+
+  //dashboard/inventory
   dashboardInventario: "/dashboard/inventory",
+
+  //dashboard/impact
   dashboardImpacto: "/dashboard/impact",
+
+  //dashboard/reports
   dashboardReportes: "/dashboard/reports",
+
+  //dashboard/clients
   dashboardClientes: "/dashboard/clients",
+
+  //dashboard/brands
   dashboardMarcas: "/dashboard/brands",
   dashboardMarcasNuevo: "/dashboard/brands/new",
+  dashboardMarcasEditar: "/dashboard/brands/edit/:id",
 };
