@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Leaf, Mail, Lock, Check, Eye, EyeIcon, EyeOffIcon, EyeClosed } from "lucide-react";
+import { Leaf, Mail, Lock, Check, Eye, EyeClosed } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/auth.store";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -13,16 +15,34 @@ export default function AuthForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const { login, isLoading, error, clearError } = useAuthStore();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLogin) {
-      console.log("Login:", { email, password, rememberMe });
-    } else {
-      console.log("Register:", { email, password, confirmPassword });
+    clearError();
+
+    // Validación para registro
+    if (!isLogin && password !== confirmPassword) {
+      alert("Las contraseñas no coinciden");
+      return;
+    }
+
+    try {
+      if (isLogin) {
+        await login(email, password);
+        console.log("Login exitoso!");
+        navigate("/dashboard"); // Redirigir después del login
+      } else {
+        // TODO: Agregar función de registro en el store
+        console.log("Registro aún no implementado");
+        alert("Función de registro en desarrollo");
+      }
+    } catch (error) {
+      console.error("Operación falló:", error);
     }
   };
-
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -81,7 +101,11 @@ export default function AuthForm() {
           {/* Tabs */}
           <div className="flex">
             <button
-              onClick={() => setIsLogin(true)}
+              type="button"
+              onClick={() => {
+                setIsLogin(true);
+                clearError();
+              }}
               className={`flex-1 py-4 px-6 text-sm font-medium transition-colors relative ${
                 isLogin ? "text-green-600" : "text-gray-500 hover:text-gray-700"
               }`}
@@ -92,10 +116,12 @@ export default function AuthForm() {
               )}
             </button>
             <button
+              type="button"
               onClick={() => {
                 setIsLogin(false);
                 setConfirmPassword("");
                 setRememberMe(false);
+                clearError();
               }}
               className={`flex-1 py-4 px-6 text-sm font-medium transition-colors relative ${
                 !isLogin
@@ -123,6 +149,13 @@ export default function AuthForm() {
               </p>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600">{error}</p>
+              </div>
+            )}
+
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
@@ -140,6 +173,7 @@ export default function AuthForm() {
                     placeholder="empresa@ejemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                     className="pl-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500"
                   />
                 </div>
@@ -157,15 +191,19 @@ export default function AuthForm() {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    onClick={handleShowPassword}
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500"
+                    required
+                    className="pl-10 pr-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500"
                   />
-                   <button type="button" onClick={handleShowPassword} className="absolute right-4 top-1/2 -translate-y-1/2 text-primary focus:outline-none">
-                  {showPassword ? <Eye /> : <EyeClosed />} 
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleShowPassword}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none"
+                  >
+                    {showPassword ? <Eye className="w-4 h-4" /> : <EyeClosed className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
 
@@ -181,12 +219,12 @@ export default function AuthForm() {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                     <Input
                       id="confirmPassword"
-                      type= {showPassword ? "text" : "password"}
-                      onClick={handleShowPassword}
+                      type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="pl-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500"
+                      required
+                      className="pl-10 pr-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500"
                     />
                   </div>
                 </div>
@@ -198,7 +236,9 @@ export default function AuthForm() {
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
-                      onCheckedChange={(checked) => setRememberMe(checked === true)}
+                      onCheckedChange={(checked) =>
+                        setRememberMe(checked === true)
+                      }
                     />
                     <label
                       htmlFor="remember"
@@ -208,6 +248,7 @@ export default function AuthForm() {
                     </label>
                   </div>
                   <button
+                    type="button"
                     onClick={() => alert("Recuperar contraseña")}
                     className="text-sm text-green-600 hover:text-green-700 font-medium"
                   >
@@ -219,72 +260,22 @@ export default function AuthForm() {
               <Button
                 type="submit"
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-6 transition-all"
+                disabled={isLoading}
               >
-                {isLogin ? "Iniciar Sesión" : "Registrarse"}
+                {isLoading
+                  ? "Cargando..."
+                  : isLogin
+                  ? "Iniciar Sesión"
+                  : "Registrarse"}
               </Button>
             </form>
-
-
-            {/* Divider */}
-            {/* <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
-              </div>
-              <div className="relative flex justify-center text-xs">
-                <span className="px-2 bg-white text-gray-500">
-                  O continúa con
-                </span>
-              </div>
-            </div> */}
-
-            {/* Social Login */}
-            {/* <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 hover:bg-gray-50"
-                onClick={() => console.log("Google login")}
-              >
-                <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="currentColor"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                Google
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full border-gray-300 hover:bg-gray-50"
-                onClick={() => console.log("Microsoft login")}
-              >
-                <svg
-                  className="w-5 h-5 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z" />
-                </svg>
-                Microsoft
-              </Button>
-            </div>  */}
 
             {/* Footer Links */}
             <div className="pt-4 space-y-2 text-center">
               <p className="text-xs text-gray-600">
                 Manténgase al día |{" "}
                 <button
+                  type="button"
                   onClick={() => console.log("Soporte")}
                   className="text-green-600 hover:underline"
                 >
@@ -294,6 +285,7 @@ export default function AuthForm() {
               <p className="text-xs text-gray-600">
                 Al registrarte, aceptas nuestros{" "}
                 <button
+                  type="button"
                   onClick={() => console.log("Términos")}
                   className="text-green-600 hover:underline"
                 >
@@ -302,6 +294,7 @@ export default function AuthForm() {
               </p>
               <p className="text-xs text-gray-600">
                 <button
+                  type="button"
                   onClick={() => console.log("Privacidad")}
                   className="text-green-600 hover:underline"
                 >

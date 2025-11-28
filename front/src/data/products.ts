@@ -1,40 +1,5 @@
-export interface Brand {
-  id: string;
-  name: string;
-  logo: string;
-  description: string;
-  website: string;
-  sustentabilityStory: string;
-}
-
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  image: string[];
-  category: string;
-  impact: {
-    carbonFootprint: number; // kg CO2
-    recyclable: number; // percentage
-    waterUsage: number; // liters
-    transportDistance: number; // km
-  };
-  stock: number;
-  brand: Brand,
-  certifications: string[];
-  materials: Array<{
-    name: string;
-    percentage: number;
-    color: string;
-  }>;
-  origin: {
-    text: string;
-  };
-  rating: number;
-  reviews: number;
-  isActive: boolean;
-}
+import { Brand } from "@/types/Brand.types";
+import {Product } from "@/types/Product.types";
 
 export const products: Product[] = [
   {

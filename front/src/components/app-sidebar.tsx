@@ -27,6 +27,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { routes } from "@/lib/routes";
+import { useAuthStore } from "@/store/auth.store";
 
 const navigationItems = [
   {
@@ -79,14 +80,20 @@ const navigationItems = [
   },
 ];
 
-const user = {
-      name:  "test",
-      email:  "example@example.com",
-      avatar: "/avatars/shadcn.jpg",
-};
+
 
 export default function EcoShopSidebar() {
   const [activeItem, setActiveItem] = React.useState("Dashboard");
+
+   const { user, logout } = useAuthStore();
+
+  const userLogin = {
+      firstName:  user?.firstName || "Usuario",
+      lastName:  user?.lastName || "LastName",
+      email:  user?.email || "example@example.com",
+      avatar: user?.avatar || "/avatars/shadcn.jpg",
+};
+
 
   return (
    <Sidebar variant="inset">
@@ -116,7 +123,7 @@ export default function EcoShopSidebar() {
         )} */}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={user} />
+        <NavUser userLogin={userLogin} />
       </SidebarFooter>
     </Sidebar>
   );
