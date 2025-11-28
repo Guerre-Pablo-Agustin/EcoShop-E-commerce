@@ -91,7 +91,7 @@ export default function EcoShopSidebar() {
       firstName:  user?.firstName || "Usuario",
       lastName:  user?.lastName || "LastName",
       email:  user?.email || "example@example.com",
-      avatar: user?.avatar || "/avatars/shadcn.jpg",
+      avatar: "/avatars/shadcn.jpg",
 };
 
 
