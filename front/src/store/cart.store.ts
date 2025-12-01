@@ -1,24 +1,11 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Product } from "@/data/products";
+import { ShoppingCart } from "@/types/ShoppingCart.types";
+import { CartItem } from "@/types/CartItem.types";
+import { Product } from "@/types/Product.types";
 
-export interface CartItem {
-  id: string;
-  product: Product;
-  quantity: number;
-  unitPrice: number;
-  subTotal: number;
-  itemCarbonFootprint: number;
-}
 
-export interface ShoppingCart {
-  id: string;
-  items: CartItem[];
-  total: number;
-  estimatedCarbonFootprint: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
+
 
 interface CartStore {
   cart: ShoppingCart;

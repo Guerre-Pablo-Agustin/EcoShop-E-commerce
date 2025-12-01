@@ -18,6 +18,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Brand } from "@/data/products";
+import { routes } from "@/lib/routes";
 
 // Función para generar las columnas con las acciones
 export const getColumns = (): ColumnDef<Brand>[] => [
@@ -72,7 +73,7 @@ export const getColumns = (): ColumnDef<Brand>[] => [
   {
     id: "actions",
     cell: ({ row }) => {
-      const product = row.original;
+      const marca = row.original;
 
       return (
         <DropdownMenu>
@@ -85,12 +86,12 @@ export const getColumns = (): ColumnDef<Brand>[] => [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
+              onClick={() => navigator.clipboard.writeText(marca.id)}
             >
               Copiar ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <Link to={`/dashboard/product/${product.id}/edit`}>
+            <Link to={routes.dashboardMarcasEditar.replace(":id", marca.id)}>
               <DropdownMenuItem>
                 Editar <List className="ml-1 h-4 w-4" />
               </DropdownMenuItem>

@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {Link} from "react-router-dom";
+import { routes } from "@/lib/routes";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -108,7 +109,7 @@ export function DataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Link to="/dashboard/product/nuevo">
+        <Link to={routes.dashboardProductosNuevo}>
           <Button variant="outline" className="ml-4 cursor-pointer">
             Nuevo 
           </Button>
