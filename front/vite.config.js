@@ -13,14 +13,38 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      // ✅ Proxy para /auth (sin /api)
+      '/auth': {
+        target: 'http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('🔄 Auth proxy:', req.method, req.url);
+          });
+        }
+      },
+      // ✅ Proxy para /api
+      '/api': {
+        target: 'http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com',
+        changeOrigin: true,
+        secure: false,
+        configure: (proxy, options) => {
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log('🔄 API proxy:', req.method, req.url);
+          });
+        }
+      }
+    }
+  },
   build: {
     rollupOptions: {
       output: {
         manualChunks: {
-          // React core
+          // ... tu configuración existente
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          
-          // Radix UI components (los más usados)
           'radix-vendor': [
             '@radix-ui/react-avatar',
             '@radix-ui/react-checkbox',
@@ -34,27 +58,19 @@ export default defineConfig({
             '@radix-ui/react-toast',
             '@radix-ui/react-tooltip',
           ],
-          
-          // State management y data fetching
           'state-vendor': [
             '@tanstack/react-query',
             'zustand',
           ],
-          
-          // Forms y validación
           'form-vendor': [
             'react-hook-form',
             '@hookform/resolvers',
             'zod',
           ],
-          
-          // Charts y tablas
           'data-viz-vendor': [
             'recharts',
             '@tanstack/react-table',
           ],
-          
-          // Utilidades
           'utils-vendor': [
             'clsx',
             'tailwind-merge',

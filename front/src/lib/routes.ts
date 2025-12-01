@@ -35,9 +35,14 @@ export const routes = {
 
   //dashboard/clients
   dashboardClientes: "/dashboard/clients",
+  dashboardClientesNuevo: "/dashboard/clients/new",
+  dashboardClientesEditar: "/dashboard/clients/edit/:id",
 
   //dashboard/brands
   dashboardMarcas: "/dashboard/brands",
   dashboardMarcasNuevo: "/dashboard/brands/new",
   dashboardMarcasEditar: "/dashboard/brands/edit/:id",
+
+
+
 };
