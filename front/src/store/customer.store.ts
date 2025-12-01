@@ -1,4 +1,3 @@
-// src/store/customer.store.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
@@ -27,6 +26,7 @@ interface CustomerState {
   fetchCustomers: (params?: CustomerQueryParams) => Promise<void>;
   fetchCustomerById: (id: number) => Promise<void>;
   fetchCustomerByEmail: (email: string) => Promise<void>;
+  checkEmailExists: (email: string) => Promise<boolean>;
   clearError: () => void;
   clearCurrentCustomer: () => void;
 }
@@ -44,9 +44,7 @@ export const useCustomerStore = create<CustomerState>()(
       fetchCustomers: async (params?: CustomerQueryParams) => {
         set({ isLoading: true, error: null });
         try {
-          const response: CustomerPageResponse = await customerAPI.getAll(
-            params
-          );
+          const response: CustomerPageResponse = await customerAPI.getAll(params);
           set({
             customers: response.content,
             pagination: {
@@ -60,7 +58,6 @@ export const useCustomerStore = create<CustomerState>()(
             },
             isLoading: false,
           });
-          console.log("customers en fetchCustomers", response);
         } catch (error) {
           set({
             error: error instanceof Error ? error.message : "Error desconocido",
@@ -106,6 +103,16 @@ export const useCustomerStore = create<CustomerState>()(
         }
       },
 
+      // ✅ OPTIMIZADO: Verificar si un email ya existe
+      checkEmailExists: async (email: string): Promise<boolean> => {
+        try {
+          return await customerAPI.checkEmailExists(email);
+        } catch (error) {
+          console.error("Error al verificar email:", error);
+          throw error;
+        }
+      },
+
       // Limpiar error
       clearError: () => set({ error: null }),
 
@@ -113,11 +120,9 @@ export const useCustomerStore = create<CustomerState>()(
       clearCurrentCustomer: () => set({ currentCustomer: null }),
     }),
 
-    // Persistencia (opcional - puedes decidir si quieres persistir los customers)
     {
       name: "customer-storage",
       partialize: (state) => ({
-        // Solo persistir el customer actual si es necesario
         currentCustomer: state.currentCustomer,
       }),
     }

@@ -4,7 +4,7 @@ export const routes = {
   store: "/store",
   productDetail: "/product/:id",
   shoppingCart: "/cart",
-  login: "/auth",
+  login: "/login",
   about: "/about",
   checkout: "/checkout",
 
