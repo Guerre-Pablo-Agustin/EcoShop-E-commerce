@@ -10,6 +10,7 @@ import { routes } from "./lib/routes";
 import MainLayout from "./layout/MainLayout";
 import DashboardLayout from "./layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
+import IndexCustomers from "./pages/Dahboard/Customers";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -62,6 +63,8 @@ const App = () => (
             {/* Rutas del dashboard con DashboardLayout */}
             <Route element={<DashboardLayout />}>
               <Route path={routes.dashboard} element={<IndexDasboard />} />
+              
+               {/* Rutas de productos */}
               <Route path={routes.dashboardProducts} element={<MainProducts />} />
               <Route
                 path={routes.dashboardProductosNuevo}
@@ -71,16 +74,23 @@ const App = () => (
                 path={routes.dashboardProductosEditar}
                 element={<EditProduct />}
               />
+
+              {/* Rutas de impacto */}
               <Route
                 path={routes.dashboardImpacto}
                 element={<PageGreenMetrics />}
               />
+
+              {/* Rutas de marcas */}
               <Route path={routes.dashboardMarcas} element={<IndexBrands />} />
               <Route path={routes.dashboardMarcasNuevo} element={<NewBrand />} />
               <Route
                 path={routes.dashboardMarcasEditar}
                 element={<EditBrand />}
               />
+
+              {/* Rutas de clientes */}
+              <Route path={routes.dashboardClientes} element={<IndexCustomers />} />
             </Route>
 
             {/* Ruta 404 - debe ir al final */}

@@ -36,7 +36,7 @@ export interface LoginResponse {
 
 export const authAPI = {
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    const response = await fetch(`/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,14 +53,16 @@ export const authAPI = {
   },
 
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+
+    console.log("🚀 ~ login ~ credentials:", credentials)
+    const response = await fetch(`/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(credentials),
     });
-
+    console.log("🚀 ~ login ~ response:", response)
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Error al iniciar sesión');
