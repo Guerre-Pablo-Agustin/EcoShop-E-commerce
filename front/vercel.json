@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
