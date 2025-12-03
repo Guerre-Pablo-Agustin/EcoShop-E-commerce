@@ -44,7 +44,9 @@ export const useCustomerStore = create<CustomerState>()(
       fetchCustomers: async (params?: CustomerQueryParams) => {
         set({ isLoading: true, error: null });
         try {
-          const response: CustomerPageResponse = await customerAPI.getAll(params);
+          const response: CustomerPageResponse = await customerAPI.getAll(
+            params
+          );
           set({
             customers: response.content,
             pagination: {
@@ -106,9 +108,22 @@ export const useCustomerStore = create<CustomerState>()(
       // ✅ OPTIMIZADO: Verificar si un email ya existe
       checkEmailExists: async (email: string): Promise<boolean> => {
         try {
+          // Validación básica antes de llamar a la API
+          if (!email || email.trim() === "") {
+            throw new Error("El email no puede estar vacío");
+          }
+
           return await customerAPI.checkEmailExists(email);
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error al verificar email:", error);
+
+          // Re-lanzar el error con un mensaje más descriptivo
+          if (error?.response?.status === 400) {
+            throw new Error(
+              "El formato del email no es válido o contiene caracteres no permitidos"
+            );
+          }
+
           throw error;
         }
       },

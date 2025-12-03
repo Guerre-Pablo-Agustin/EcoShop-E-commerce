@@ -147,7 +147,7 @@ const Home = () => {
       <footer className="py-12 border-t border-border">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
           <p className="text-sm">
-            © 2024 EcoCommerce. Construyendo un futuro sostenible, una compra a la vez.
+            © 2025 EcoCommerce. Construyendo un futuro sostenible, una compra a la vez.
           </p>
         </div>
       </footer>
