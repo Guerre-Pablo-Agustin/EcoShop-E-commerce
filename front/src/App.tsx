@@ -12,6 +12,7 @@ import DashboardLayout from "./layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 import IndexCustomers from "./pages/Dahboard/Customers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import MainUser from "./pages/Dahboard/User/MainUser";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -109,6 +110,12 @@ const App = () => (
               <Route
                 path={routes.dashboardMarcasEditar}
                 element={<EditBrand />}
+              />
+
+              {/* Rutas de usuarios */}
+              <Route
+                path={routes.dashboardUsersProfile}
+                element={<MainUser />}
               />
 
               {/* Rutas de clientes */}

@@ -43,6 +43,11 @@ export const routes = {
   dashboardMarcasNuevo: "/dashboard/brands/new",
   dashboardMarcasEditar: "/dashboard/brands/edit/:id",
 
-
+//dashboard/users
+  dashboardUsers: "/dashboard/users",
+  dashboardUsersNuevo: "/dashboard/users/new",
+  dashboardUsersProfile: "/dashboard/users/profile",
+  dashboardUsersEditar: "/dashboard/users/edit/:id",
+  dashboardUsersFavoritos: "/dashboard/users/favorites",
 
 };

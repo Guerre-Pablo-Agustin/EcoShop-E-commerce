@@ -50,13 +50,13 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
     {
       title: "Perfil",
       icon: User2,
-      url: "#",
+      url: routes.dashboardUsersProfile,
       isActive: false,
     },
     {
       title: "Favoritos",
       icon: Heart,
-      url: "#",
+      url: routes.dashboardUsersFavoritos,
       isActive: false,
     },
     {
@@ -150,7 +150,7 @@ export default function EcoShopSidebar() {
   );
 
   return (
-    <Sidebar variant="inset">
+    <Sidebar variant="sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
