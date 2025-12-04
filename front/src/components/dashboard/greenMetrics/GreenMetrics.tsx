@@ -99,9 +99,9 @@ const calculateScore = (data: MetricsData): void => {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-2">
             <Leaf className="w-6 h-6 text-green-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Carga de Métricas Verdes</h1>
+            <h1 className="text-2xl font-bold ">Carga de Métricas Verdes</h1>
           </div>
-          <p className="text-gray-600 text-sm">
+          <p className=" text-sm">
             Ingresa los datos de sostenibilidad de tu producto. El Eco-Badge se calculará automáticamente en tiempo real.
           </p>
         </div>
@@ -114,7 +114,7 @@ const calculateScore = (data: MetricsData): void => {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <h3 className="font-semibold text-gray-900">Emisiones y Huella de Carbono</h3>
+                  <h3 className="font-semibold ">Emisiones y Huella de Carbono</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -164,7 +164,7 @@ const calculateScore = (data: MetricsData): void => {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                  <h3 className="font-semibold text-gray-900">Materiales y Energía</h3>
+                  <h3 className="font-semibold ">Materiales y Energía</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-2">
@@ -215,7 +215,7 @@ const calculateScore = (data: MetricsData): void => {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-2 h-2 rounded-full bg-orange-500"></div>
-                  <h3 className="font-semibold text-gray-900">Transporte y Logística</h3>
+                  <h3 className="font-semibold ">Transporte y Logística</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
@@ -289,7 +289,7 @@ const calculateScore = (data: MetricsData): void => {
           <div className="space-y-6">
              <Card className="bg-primary-500">
               <CardContent className="pt-6">
-                <h3 className="font-semibold text-gray-900 mb-4">Preview en Tiempo Real</h3>
+                <h3 className="font-semibold text-center mb-4">Preview en Tiempo Real</h3>
                 
                 <div className=" rounded-lg p-6 text-center space-y-4">
                   <div className={`w-20 h-20 rounded-full ${badge.color} flex items-center justify-center mx-auto`}>
@@ -297,7 +297,7 @@ const calculateScore = (data: MetricsData): void => {
                   </div>
                   
                   <div>
-                    <h4 className="font-semibold text-gray-900 mb-2">Eco-Badge Preview</h4>
+                    <h4 className="font-semibold mb-2">Eco-Badge Preview</h4>
                     <span className={`inline-block px-4 py-1 rounded-full text-sm font-medium ${badge.color} ${badge.textColor}`}>
                       {badge.name}
                     </span>
@@ -305,19 +305,19 @@ const calculateScore = (data: MetricsData): void => {
 
                   <div className="pt-2 border-t border-gray-200">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-600">Puntuación Sostenible</span>
+                      <span className="">Puntuación Sostenible</span>
                       <span className="font-semibold">{score}/100</span>
                     </div>
                   </div>
 
                   <div className="pt-2 border-t border-gray-200">
-                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center justify-center gap-2 text-sm ">
                       <Leaf className="w-4 h-4 text-green-600" />
                       <span>Ingresa métricas para calcular</span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-gray-500 pt-2">
+                  <p className="text-xs pt-2">
                     Este badge se mostrará en tus productos según las métricas ingresadas
                   </p>
                 </div>
@@ -326,8 +326,8 @@ const calculateScore = (data: MetricsData): void => {
 
              <Card className="bg-primary-500">
               <CardContent className="pt-6">
-                <h3 className="font-semibold text-gray-900 mb-3">Criterios de Evaluación</h3>
-                <ul className="space-y-2 text-sm text-gray-600">
+                <h3 className="font-semibold text-center mb-3">Criterios de Evaluación</h3>
+                <ul className="space-y-2 text-sm ">
                   <li>• <span className="font-medium">Bronze (0-49):</span> Compromiso inicial sostenible</li>
                   <li>• <span className="font-medium">Silver (50-69):</span> Compromiso moderado</li>
                   <li>• <span className="font-medium">Gold (70-84):</span> Alto compromiso ambiental</li>

@@ -100,16 +100,16 @@ export default function RegisterNewBrand() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
+    <div className="min-h-screen py-12 px-4">
       <div className="max-w-7xl mx-auto">
        <div className="grid md:grid-cols-2 gap-12">
           {/* Left Column */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold  mb-2">
                 Registro de Marca Sostenible
               </h1>
-              <p className="text-gray-600">
+              <p className="">
                 Únete a nuestra red de proveedores comprometidos con el medio
                 ambiente
               </p>
@@ -118,23 +118,23 @@ export default function RegisterNewBrand() {
             {/* Icons Section */}
             <div className="flex justify-center gap-6 py-8">
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+                <div className="w-20 h-20 rounded-full  flex items-center justify-center mb-3">
                   <Leaf className="w-10 h-10 text-green-600" />
                 </div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+                <div className="w-20 h-20 rounded-full  flex items-center justify-center mb-3">
                   <Recycle className="w-10 h-10 text-green-600" />
                 </div>
               </div>
               <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+                <div className="w-20 h-20 rounded-full  flex items-center justify-center mb-3">
                   <Globe className="w-10 h-10 text-green-600" />
                 </div>
               </div>
             </div>
 
-            <div className="text-center text-gray-600 font-medium">
+            <div className="text-center  font-medium">
               Sostenibilidad • Transparencia • Impacto Positivo
             </div>
 
@@ -145,10 +145,10 @@ export default function RegisterNewBrand() {
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold ">
                     Certificación Ecológica
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm">
                     Valida tus prácticas sostenibles
                   </p>
                 </div>
@@ -159,8 +159,8 @@ export default function RegisterNewBrand() {
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Red Global</h3>
-                  <p className="text-sm text-gray-600">
+                  <h3 className="font-semibold ">Red Global</h3>
+                  <p className="text-sm">
                     Conecta con compradores conscientes
                   </p>
                 </div>
@@ -171,10 +171,10 @@ export default function RegisterNewBrand() {
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold ">
                     Gestión Transparente
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm ">
                     Herramientas para tu crecimiento
                   </p>
                 </div>
@@ -186,10 +186,10 @@ export default function RegisterNewBrand() {
           <Card>
             <CardContent>
               <CardHeader>
-                <h2 className="text-xl font-semibold text-gray-900 mb-1">
+                <h2 className="text-xl font-semibold  mb-1">
                   Información Empresarial
                 </h2>
-                <p className="text-sm text-gray-600 mb-6">
+                <p className="text-sm  mb-6">
                   Completa los datos de tu empresa para comenzar
                 </p>
               </CardHeader>
