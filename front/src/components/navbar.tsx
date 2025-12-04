@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useCartItems } from "@/store/cart.store";
+import { useAuthStore } from "@/store/auth.store";
 import { routes } from "@/lib/routes";
 import logoImage from "../assets/EcoShop_Logo.svg";
 
@@ -22,18 +23,22 @@ const Navbar = () => {
   const items = useCartItems();
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  //datos del usuario
+  const user = useAuthStore((state) => state.user);
+
   const navigation = [
     { name: "Mujer", href: routes.mujer },
     { name: "Hombre", href: routes.hombre },
     { name: "Accesorios", href: routes.accesorios },
-    { name: "Hogar", href: routes.hogar }
+    { name: "Hogar", href: routes.hogar },
   ];
 
   return (
     <>
       {/* Top Banner */}
       <div className="bg-primary text-primary-foreground text-center py-2 text-xs md:text-sm font-medium">
-        ENTREGAS EN 24/48H • +600 MATERIALES RECICLADOS INNOVADORES DESARROLLADOS
+        ENTREGAS EN 24/48H • +600 MATERIALES RECICLADOS INNOVADORES
+        DESARROLLADOS
       </div>
 
       {/* Main Navbar */}
@@ -82,15 +87,15 @@ const Navbar = () => {
               </Sheet>
 
               {/* Logo - Visible only on Mobile */}
-              <Link 
+              <Link
                 to={routes.home}
                 className="flex items-center gap-2 lg:hidden"
               >
                 <img
-                    src={logoImage}
-                    alt="EcoShop Logo"
-                    className="w-36 h-22 object-contain"
-                  />
+                  src={logoImage}
+                  alt="EcoShop Logo"
+                  className="w-36 h-22 object-contain"
+                />
               </Link>
 
               {/* Desktop Navigation */}
@@ -108,15 +113,15 @@ const Navbar = () => {
             </div>
 
             {/* Logo - Centered on Desktop only */}
-            <Link 
+            <Link
               to={routes.home}
               className="hidden lg:flex items-center gap-2 absolute left-1/2 transform -translate-x-1/2"
             >
-                <img
-                    src={logoImage}
-                    alt="EcoShop Logo"
-                    className="w-48 h-32 object-contain"
-                  />
+              <img
+                src={logoImage}
+                alt="EcoShop Logo"
+                className="w-48 h-32 object-contain"
+              />
             </Link>
 
             {/* Right Actions */}
@@ -124,33 +129,41 @@ const Navbar = () => {
               {/* Desktop Links */}
               <div className="hidden md:flex items-center gap-2">
                 <Link to={routes.store}>
-                  <Button variant="ghost" size="sm" className="text-xs uppercase">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs uppercase"
+                  >
                     Tienda
                   </Button>
                 </Link>
                 <Link to={routes.about}>
-                  <Button variant="ghost" size="sm" className="text-xs uppercase">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs uppercase"
+                  >
                     Sobre Nosotros
                   </Button>
                 </Link>
               </div>
 
               {/* Search Button */}
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 size="icon"
                 onClick={() => setSearchOpen(true)}
               >
                 <Search className="h-5 w-5" />
               </Button>
-              
-              {/* User Account */}
-              <Link to={routes.login}>
+
+              {/* User Account - Redirige al dashboard si está logueado, sino al login */}
+              <Link to={user ? routes.dashboard : routes.login}>
                 <Button variant="ghost" size="icon">
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
-              
+
               {/* Shopping Cart */}
               <Link to={routes.shoppingCart}>
                 <Button variant="ghost" size="icon" className="relative">
@@ -172,8 +185,8 @@ const Navbar = () => {
             <DialogTitle>Buscar Productos</DialogTitle>
           </DialogHeader>
           <div className="flex gap-2 mt-4">
-            <Input 
-              placeholder="¿Qué estás buscando?" 
+            <Input
+              placeholder="¿Qué estás buscando?"
               className="flex-1"
               autoFocus
             />
@@ -183,15 +196,29 @@ const Navbar = () => {
             </Button>
           </div>
           <div className="mt-4">
-            <p className="text-sm text-muted-foreground mb-2">Búsquedas populares:</p>
+            <p className="text-sm text-muted-foreground mb-2">
+              Búsquedas populares:
+            </p>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" onClick={() => setSearchOpen(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchOpen(false)}
+              >
                 Ropa sostenible
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setSearchOpen(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchOpen(false)}
+              >
                 Accesorios reciclados
               </Button>
-              <Button variant="outline" size="sm" onClick={() => setSearchOpen(false)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSearchOpen(false)}
+              >
                 Productos orgánicos
               </Button>
             </div>

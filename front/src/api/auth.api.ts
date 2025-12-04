@@ -1,11 +1,11 @@
 // src/api/auth.api.ts
-import { API_BASE_URL } from './config';
+import { API_BASE_URL } from "./config";
 
 export interface RegisterRequest {
   firstName: string;
   lastName: string;
   email: string;
-  userType: 'CUSTOMER' | 'BRAND_ADMIN'; // según el Swagger
+  userType: "CUSTOMER" | "BRAND_ADMIN"; // según el Swagger
   password: string;
 }
 
@@ -37,35 +37,34 @@ export interface LoginResponse {
 export const authAPI = {
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
     const response = await fetch(`/auth/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Error al registrar');
+      throw new Error(error.message || "Error al registrar");
     }
 
     return response.json();
   },
 
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-
-    console.log("🚀 ~ login ~ credentials:", credentials)
+    console.log("🚀 ~ login ~ credentials:", credentials);
     const response = await fetch(`/auth/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
-    console.log("🚀 ~ login ~ response:", response)
+    console.log("🚀 ~ login ~ response:", response);
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || 'Error al iniciar sesión');
+      throw new Error(error.message || "Error al iniciar sesión");
     }
 
     return response.json();
@@ -74,5 +73,20 @@ export const authAPI = {
   logout: async (): Promise<void> => {
     // Si no hay token, el logout puede ser solo limpiar el estado local
     // O verificar si hay un endpoint de logout en el Swagger
+  },
+
+  getCurrentUser: async (): Promise<LoginResponse> => {
+    const response = await fetch(`/auth/me`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("No se pudo obtener el usuario actual");
+    }
+
+    return response.json();
   },
 };
