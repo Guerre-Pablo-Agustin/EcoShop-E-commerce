@@ -29,6 +29,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useAuthStore } from "@/store/auth.store"
+import { useNavigate } from "react-router-dom"
 // import { useRouter } from "next/navigation"
 // import { useDispatch } from "react-redux"
 // import { useLogoutMutation } from "@/redux/services/authApi"
@@ -45,6 +47,10 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+ const navigate = useNavigate();
+
+  const {logout} = useAuthStore()
 
   //  const routes = useRouter();
   // const dispatch = useDispatch();
@@ -63,6 +69,12 @@ export function NavUser({
   // };
 
 console.log("userLogin", userLogin)
+
+const handlerLogout = () => {
+  logout()
+  navigate("/login")
+}
+
 
   return (
     <SidebarMenu>
@@ -127,7 +139,7 @@ console.log("userLogin", userLogin)
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handlerLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
