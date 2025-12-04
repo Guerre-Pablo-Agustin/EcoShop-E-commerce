@@ -4,6 +4,8 @@ import { Leaf, Check } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
 import LoginForm from "./loginForm";
 import RegisterForm from "./registerForm";
+import bolsaImage from "@/assets/bolsa.png";
+import manosImage from "@/assets/Manos.png";
 
 export default function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,50 +18,67 @@ export default function AuthForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-gray-50 to-gray-100 p-4">
-      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+      <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-start">
         {/* Left Side - Info */}
-        <div className="hidden lg:flex flex-col items-center justify-center space-y-8 p-12">
-          <div className="w-48 h-48 rounded-3xl bg-gray-200 flex items-center justify-center">
-            <div className="text-center">
-              <Leaf className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 font-medium">
-                Sustainable Business Ecosystem
+        <div className="hidden lg:flex flex-col items-start space-y-8 p-12 pt-20">
+          <div className="w-full h-64 rounded-3xl bg-gray-200 flex items-start justify-start">
+            {isLogin ? (
+              <img
+                src={bolsaImage}
+                alt="bolsa"
+                className="w-full h-full object-cover rounded-md"
+              />
+            ) : (
+              <img
+                src={manosImage}
+                alt="Manos"
+                className="w-full h-full object-cover rounded-md"
+              />
+            )}
+          </div>
+
+          {isLogin ? (
+            <div className="space-y-6 max-w-md">
+              <h3 className="text-2xl font-bold text-gray-800 text-start">
+                Únete al futuro sostenible
+              </h3>
+              <p className="text-gray-600 text-start leading-relaxed">
+                Conecta tu marca con consumidores conscientes y construye un
+                negocio responsable con el medio ambiente.
+              </p>
+
+              <div className="space-y-4 pt-4">
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
+                  <p className="text-sm text-gray-700">
+                    Certificación de sostenibilidad
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
+                  <p className="text-sm text-gray-700">
+                    Análisis de impacto ambiental
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
+                  <p className="text-sm text-gray-700">
+                    Red de proveedores verificados
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-6 max-w-md">
+              <Leaf className="w-10 h-10 flex mx-auto items-center justify-center shrink-0 p-1 text-primary" />
+              <p className="text-lg  text-primary text-center font-playfair">
+                "Cada compra cuenta una historia. Empieza a escribir la tuya de
+                forma responsable."
               </p>
             </div>
-          </div>
-
-          <div className="space-y-6 max-w-md">
-            <h2 className="text-3xl font-bold text-gray-800 text-center">
-              Únete al futuro sostenible
-            </h2>
-            <p className="text-gray-600 text-center leading-relaxed">
-              Conecta tu marca con consumidores conscientes y construye un
-              negocio responsable con el medio ambiente.
-            </p>
-
-            <div className="space-y-4 pt-4">
-              <div className="flex items-start gap-3">
-                <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
-                <p className="text-sm text-gray-700">
-                  Certificación de sostenibilidad
-                </p>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
-                <p className="text-sm text-gray-700">
-                  Análisis de impacto ambiental
-                </p>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <Check className="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center shrink-0 p-1 text-white" />
-                <p className="text-sm text-gray-700">
-                  Red de proveedores verificados
-                </p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Right Side - Form */}
@@ -94,7 +113,8 @@ export default function AuthForm() {
             </button>
           </div>
 
-          <div className="p-8 space-y-6">
+          {/* Container con altura mínima fija */}
+          <div className="p-8 space-y-6 min-h-[600px] flex flex-col">
             {/* Header */}
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-gray-900">
@@ -115,10 +135,12 @@ export default function AuthForm() {
             )}
 
             {/* Render LoginForm o RegisterForm según el estado */}
-            {isLogin ? <LoginForm /> : <RegisterForm />}
+            <div className="flex-1">
+              {isLogin ? <LoginForm /> : <RegisterForm />}
+            </div>
 
             {/* Footer Links */}
-            <div className="pt-4 space-y-2 text-center">
+            <div className="pt-4 space-y-2 text-center mt-auto">
               <p className="text-xs text-gray-600">
                 Manténgase al día |{" "}
                 <button

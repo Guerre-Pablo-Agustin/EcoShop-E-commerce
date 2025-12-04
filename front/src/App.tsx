@@ -11,11 +11,14 @@ import MainLayout from "./layout/MainLayout";
 import DashboardLayout from "./layout/DashboardLayout";
 import NotFound from "./pages/NotFound";
 import IndexCustomers from "./pages/Dahboard/Customers";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
 const ProductDetail = lazy(() => import("./pages/Product/ProductDetail"));
-const ShoppingCartPage = lazy(() => import("./pages/ShoppingCartPage/ShoppingCartPage"));
+const ShoppingCartPage = lazy(
+  () => import("./pages/ShoppingCartPage/ShoppingCartPage")
+);
 const LoginPage = lazy(() => import("./pages/Login/LoginPage"));
 const StorePage = lazy(() => import("./pages/Store/StorePage"));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage/CheckoutPage"));
@@ -27,8 +30,12 @@ const IndexBrands = lazy(() => import("./pages/Dahboard/Brands/indexBrands"));
 const NewBrand = lazy(() => import("./pages/Dahboard/Brands/newBrand"));
 const EditBrand = lazy(() => import("./pages/Dahboard/Brands/editBrand"));
 const NewProduct = lazy(() => import("./pages/Dahboard/Productos/newProduct"));
-const EditProduct = lazy(() => import("./pages/Dahboard/Productos/editProduct"));
-const PageGreenMetrics = lazy(() => import("./pages/Dahboard/GreenMetrics/PageGreenMetrics"));
+const EditProduct = lazy(
+  () => import("./pages/Dahboard/Productos/editProduct")
+);
+const PageGreenMetrics = lazy(
+  () => import("./pages/Dahboard/GreenMetrics/PageGreenMetrics")
+);
 
 const queryClient = new QueryClient();
 
@@ -54,18 +61,30 @@ const App = () => (
             <Route element={<MainLayout />}>
               <Route path={routes.home} element={<Index />} />
               <Route path={routes.productDetail} element={<ProductDetail />} />
-              <Route path={routes.shoppingCart} element={<ShoppingCartPage />} />
+              <Route
+                path={routes.shoppingCart}
+                element={<ShoppingCartPage />}
+              />
               <Route path={routes.login} element={<LoginPage />} />
               <Route path={routes.store} element={<StorePage />} />
               <Route path={routes.checkout} element={<CheckoutPage />} />
             </Route>
 
             {/* Rutas del dashboard con DashboardLayout */}
-            <Route element={<DashboardLayout />}>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
               <Route path={routes.dashboard} element={<IndexDasboard />} />
-              
-               {/* Rutas de productos */}
-              <Route path={routes.dashboardProducts} element={<MainProducts />} />
+
+              {/* Rutas de productos */}
+              <Route
+                path={routes.dashboardProducts}
+                element={<MainProducts />}
+              />
               <Route
                 path={routes.dashboardProductosNuevo}
                 element={<NewProduct />}
@@ -83,14 +102,20 @@ const App = () => (
 
               {/* Rutas de marcas */}
               <Route path={routes.dashboardMarcas} element={<IndexBrands />} />
-              <Route path={routes.dashboardMarcasNuevo} element={<NewBrand />} />
+              <Route
+                path={routes.dashboardMarcasNuevo}
+                element={<NewBrand />}
+              />
               <Route
                 path={routes.dashboardMarcasEditar}
                 element={<EditBrand />}
               />
 
               {/* Rutas de clientes */}
-              <Route path={routes.dashboardClientes} element={<IndexCustomers />} />
+              <Route
+                path={routes.dashboardClientes}
+                element={<IndexCustomers />}
+              />
             </Route>
 
             {/* Ruta 404 - debe ir al final */}

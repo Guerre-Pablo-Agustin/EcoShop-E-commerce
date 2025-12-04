@@ -53,7 +53,7 @@ const MainLayout = () => {
             </div>
           </div>
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>© 2024 EcoCommerce. Construyendo un futuro sostenible, una compra a la vez.</p>
+            <p>© 2025 EcoCommerce. Construyendo un futuro sostenible, una compra a la vez.</p>
           </div>
         </div>
       </footer>

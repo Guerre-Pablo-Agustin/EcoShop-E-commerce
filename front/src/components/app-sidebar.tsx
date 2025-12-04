@@ -13,6 +13,7 @@ import {
   User2,
   Heart,
   type LucideIcon,
+  List,
 } from "lucide-react";
 import logoImage from "../assets/EcoShop_Logo.svg";
 import { NavMain } from "@/components/nav-main";
@@ -60,7 +61,7 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
     },
     {
       title: "Historial de compras",
-      icon: ShoppingCart,
+      icon: List,
       url: "#",
       isActive: false,
     },

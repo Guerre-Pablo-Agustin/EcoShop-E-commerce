@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,11 +6,12 @@ import {
   Mail,
   Lock,
   Eye,
-  EyeClosed,
+  EyeOff,
   User,
   CheckCircle2,
   XCircle,
   Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/store/auth.store";
@@ -24,60 +25,85 @@ export default function RegisterForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Estados para verificación de email
+  // Estados para verificaciÃ³n de email
   const [emailVerified, setEmailVerified] = useState<boolean | null>(null);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { register, isLoading, clearError } = useAuthStore();
   const { checkEmailExists } = useCustomerStore();
 
-  // Función para verificar si el email existe
-  const handleVerifyEmail = async () => {
-    if (!email || !email.includes("@")) {
-      alert("Por favor ingresa un email válido");
+  // FunciÃ³n para verificar si el email existe (automÃ¡tica)
+  const handleVerifyEmail = async (emailToVerify: string) => {
+    // ValidaciÃ³n bÃ¡sica de formato
+    if (!emailToVerify || !emailToVerify.includes("@")) {
+      setEmailVerified(null);
+      setEmailError(null);
       return;
     }
 
     setIsCheckingEmail(true);
     setEmailVerified(null);
+    setEmailError(null);
 
     try {
-      const exists = await checkEmailExists(email);
-      setEmailVerified(!exists); // true si está disponible, false si ya existe
-    } catch (error) {
+      console.log("Iniciando verificacion de email:", emailToVerify);
+      const exists = await checkEmailExists(emailToVerify);
+      console.log("Resultado de verificacion - Email existe:", exists);
+      
+      setEmailVerified(!exists); // true si esta disponible, false si ya existe
+      setEmailError(null);
+    } catch (error: any) {
       console.error("Error al verificar email:", error);
-      // ✅ Mostrar mensaje más específico
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Error al verificar el email. Por favor intenta nuevamente.";
-      alert(errorMessage);
+      
+      // Manejo especÃ­fico de errores
+      let errorMessage = "Error al verificar el email. Por favor intenta nuevamente.";
+      
+      if (error?.message) {
+        errorMessage = error.message;
+      } else if (error?.response?.status === 400) {
+        errorMessage = "El formato del email no es valido o no es aceptado por el servidor.";
+      } else if (error?.response?.status === 500) {
+        errorMessage = "Error en el servidor. Por favor intenta mas tarde.";
+      }
+      
+      setEmailError(errorMessage);
+      setEmailVerified(null);
     } finally {
       setIsCheckingEmail(false);
     }
   };
 
-  // Resetear verificación cuando cambia el email
+  // Resetear verificaciÃ³n cuando cambia el email
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
-    setEmailVerified(null); // Resetear estado de verificación
+    setEmailVerified(null);
+    setEmailError(null);
+  };
+
+  // Verificar automÃ¡ticamente cuando el usuario sale del campo
+  const handleEmailBlur = () => {
+    console.log("Campo email perdiÃ³ el foco. Email actual:", email);
+    if (email && email.includes("@")) {
+      handleVerifyEmail(email);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearError();
 
-    // Validar que el email haya sido verificado y esté disponible
+    // Validar que el email haya sido verificado y estÃ© disponible
     if (emailVerified !== true) {
       alert(
-        "Por favor verifica que el email esté disponible antes de registrarte"
+        "Por favor verifica que el email este disponible antes de registrarte"
       );
       return;
     }
 
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      alert("Las contraseÃ±as no coinciden");
       return;
     }
 
@@ -86,12 +112,12 @@ export default function RegisterForm() {
       console.log("Registro exitoso! Usuario creado como CUSTOMER");
       navigate("/dashboard");
     } catch (error) {
-      console.error("Registro falló:", error);
+      console.error("Registro fallÃ³:", error);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label
@@ -126,7 +152,7 @@ export default function RegisterForm() {
             <Input
               id="lastName"
               type="text"
-              placeholder="Pérez"
+              placeholder="PÃ©rez"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               required
@@ -140,58 +166,47 @@ export default function RegisterForm() {
         <Label htmlFor="email" className="text-gray-700 text-sm font-medium">
           Email corporativo
         </Label>
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              id="email"
-              type="email"
-              placeholder="empresa@ejemplo.com"
-              value={email}
-              onChange={handleEmailChange}
-              required
-              disabled={isCheckingEmail}
-              className={`pl-10 pr-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500 transition-all ${
-                emailVerified === true
-                  ? "border-green-500 focus:border-green-600 bg-green-50"
-                  : emailVerified === false
-                  ? "border-red-500 focus:border-red-600 bg-red-50"
-                  : ""
-              } ${isCheckingEmail ? "opacity-60 cursor-not-allowed" : ""}`}
-            />
-            {isCheckingEmail && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-              </div>
-            )}
-            {!isCheckingEmail && emailVerified !== null && (
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                {emailVerified ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-600 animate-in fade-in zoom-in duration-300" />
-                ) : (
-                  <XCircle className="w-5 h-5 text-red-600 animate-in fade-in zoom-in duration-300" />
-                )}
-              </div>
-            )}
-          </div>
-          <Button
-            type="button"
-            onClick={handleVerifyEmail}
-            disabled={isCheckingEmail || !email}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 whitespace-nowrap font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[140px]"
-          >
-            {isCheckingEmail ? (
-              <span className="flex items-center justify-center">
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Verificando...
-              </span>
-            ) : (
-              "Verificar Email"
-            )}
-          </Button>
+        <div className="relative">
+          <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            id="email"
+            type="email"
+            placeholder="empresa@ejemplo.com"
+            value={email}
+            onChange={handleEmailChange}
+            onBlur={handleEmailBlur}
+            required
+            disabled={isCheckingEmail}
+            className={`pl-10 pr-10 bg-white border-gray-300 focus:border-green-500 focus:ring-green-500 transition-all ${
+              emailVerified === true
+                ? "border-green-500 focus:border-green-600 bg-green-50"
+                : emailVerified === false || emailError
+                ? "border-red-500 focus:border-red-600 bg-red-50"
+                : ""
+            } ${isCheckingEmail ? "opacity-60 cursor-not-allowed" : ""}`}
+          />
+          {isCheckingEmail && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+            </div>
+          )}
+          {!isCheckingEmail && emailVerified !== null && !emailError && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              {emailVerified ? (
+                <CheckCircle2 className="w-5 h-5 text-green-600 animate-in fade-in zoom-in duration-300" />
+              ) : (
+                <XCircle className="w-5 h-5 text-red-600 animate-in fade-in zoom-in duration-300" />
+              )}
+            </div>
+          )}
+          {!isCheckingEmail && emailError && (
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+              <AlertCircle className="w-5 h-5 text-orange-600 animate-in fade-in zoom-in duration-300" />
+            </div>
+          )}
         </div>
 
-        {/* Mensaje de estado de verificación */}
+        {/* Mensaje de estado de verificaciÃ³n */}
         {isCheckingEmail && (
           <div className="bg-blue-50 border border-blue-200 rounded-md p-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <p className="text-sm text-blue-700 font-medium flex items-center gap-2">
@@ -201,20 +216,29 @@ export default function RegisterForm() {
           </div>
         )}
 
-        {!isCheckingEmail && emailVerified === true && (
+        {!isCheckingEmail && emailVerified === true && !emailError && (
           <div className="bg-green-50 border border-green-200 rounded-md p-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <p className="text-sm text-green-700 font-medium flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4" />✓ Email disponible - Puedes
-              continuar con el registro
+              <CheckCircle2 className="w-4 h-4" />
+            Email disponible - Puedes continuar con el registro
             </p>
           </div>
         )}
 
-        {!isCheckingEmail && emailVerified === false && (
+        {!isCheckingEmail && emailVerified === false && !emailError && (
           <div className="bg-red-50 border border-red-200 rounded-md p-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <p className="text-sm text-red-700 font-medium flex items-center gap-2">
-              <XCircle className="w-4 h-4" />✗ Este email ya está registrado -
-              Por favor usa otro email
+              <XCircle className="w-4 h-4" />
+              Este email ya esta registrado - Por favor usa otro email
+            </p>
+          </div>
+        )}
+
+        {!isCheckingEmail && emailError && (
+          <div className="bg-orange-50 border border-orange-200 rounded-md p-3 animate-in fade-in slide-in-from-top-2 duration-300">
+            <p className="text-sm text-orange-700 font-medium flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              {emailError}
             </p>
           </div>
         )}
@@ -229,7 +253,7 @@ export default function RegisterForm() {
           <Input
             id="password"
             type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
+            placeholder="********"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
@@ -243,7 +267,7 @@ export default function RegisterForm() {
             {showPassword ? (
               <Eye className="w-4 h-4" />
             ) : (
-              <EyeClosed className="w-4 h-4" />
+              <EyeOff className="w-4 h-4" />
             )}
           </button>
         </div>
@@ -261,7 +285,7 @@ export default function RegisterForm() {
           <Input
             id="confirmPassword"
             type={showPassword ? "text" : "password"}
-            placeholder="••••••••"
+            placeholder="********"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
@@ -272,11 +296,12 @@ export default function RegisterForm() {
 
       <Button
         type="submit"
+        onClick={handleSubmit}
         className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-6 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={isLoading || emailVerified !== true}
       >
         {isLoading ? "Cargando..." : "Registrarse"}
       </Button>
-    </form>
+    </div>
   );
 }
