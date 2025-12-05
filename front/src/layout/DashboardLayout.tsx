@@ -17,6 +17,7 @@ import { Separator } from "@/components/ui/separator";
 import { Outlet } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ModeToggle } from "@/components/theme/mode-toggle";
+import { Toaster } from "@/components/ui/toaster";
 // import { AuthLoader } from "@/components/dashboard/auth-loader";
 
 export default function DashboardLayout({}) {
@@ -48,6 +49,7 @@ export default function DashboardLayout({}) {
           <main className="flex flex-1 flex-col gap-4 p-4">
             <Outlet />
           </main>
+          <Toaster />
         </SidebarInset>
       </SidebarProvider>
     </ThemeProvider>

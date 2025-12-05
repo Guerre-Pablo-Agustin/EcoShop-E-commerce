@@ -1,19 +1,33 @@
 import EditBrandForm from "@/components/dashboard/brands/editBrand";
-import { brands } from "@/data/products";
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useBrandStore } from "@/store/brand.store";
+import { Loader2 } from "lucide-react";
 
 const EditBrand = () => {
   const { id } = useParams();
-  const brand = brands.find((b) => b.id === id);
 
-  if (!brand) {
-    return <div>Marca no encontrada</div>;
+  const { currentBrand, fetchBrandById, isLoading } = useBrandStore();
+
+  useEffect(() => {
+    if (id) {
+      fetchBrandById(Number(id));
+    }
+  }, [id]);
+
+  if (isLoading) {
+    return <div>
+      <Loader2 className="animate-spin"/>
+      </div>;
+  }
+
+  if (!currentBrand) {
+    return <div>No se encontró la marca</div>;
   }
 
   return (
     <div>
-      <EditBrandForm brand={brand} />
+      <EditBrandForm brand={currentBrand!} />
     </div>
   );
 };

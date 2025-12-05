@@ -17,8 +17,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Brand } from "@/data/products";
 import { routes } from "@/lib/routes";
+import { Brand } from "@/types/Brand.types";
 
 // Función para generar las columnas con las acciones
 export const getColumns = (): ColumnDef<Brand>[] => [
@@ -67,8 +67,8 @@ export const getColumns = (): ColumnDef<Brand>[] => [
     header: "Descripcion",
   },
   {
-    accessorKey: "website",
-    header: "Sitio Web",
+    accessorKey: "country",
+    header: "Pais",
   },
   {
     id: "actions",

@@ -16,6 +16,7 @@ import {
   List,
 } from "lucide-react";
 import logoImage from "../assets/EcoShop_Logo.svg";
+import logoDarkImage from "../assets/Logo_Dark.png";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -29,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/store/auth.store";
+import { useTheme } from "@/components/theme/theme-provider";
 
 // 1️⃣ Definir tipos para mejor type safety
 type NavItem = {
@@ -136,6 +138,7 @@ function useNavigation() {
 
 export default function EcoShopSidebar() {
   const { user } = useAuthStore();
+  const { theme } = useTheme();
   const navigationItems = useNavigation();
 
   // 4️⃣ Memoizar el objeto de usuario para evitar re-renders innecesarios
@@ -149,17 +152,34 @@ export default function EcoShopSidebar() {
     [user]
   );
 
+  // 5️⃣ Determinar qué logo mostrar según el tema
+  const { currentLogo, logoSize } = React.useMemo(() => {
+    let isDark = false;
+    
+    // Si el tema es 'system', detectar el tema del sistema
+    if (theme === "system") {
+      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } else {
+      isDark = theme === "dark";
+    }
+    
+    return {
+      currentLogo: isDark ? logoDarkImage : logoImage,
+      logoSize: isDark ? "h-36" : "h-28" 
+    };
+  }, [theme]);
+
   return (
     <Sidebar variant="sidebar">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href={routes.dashboard}>
+              <a href={routes.dashboard} className="flex items-center justify-center">
                 <img
-                  src={logoImage}
+                  src={currentLogo}
                   alt="EcoShop Logo"
-                  className="w-36 h-22 object-contain"
+                  className={`${logoSize} w-auto object-contain`}
                 />
               </a>
             </SidebarMenuButton>

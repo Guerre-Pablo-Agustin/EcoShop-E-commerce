@@ -9,18 +9,11 @@ import {
   Shield,
   Lock,
   Database,
+  Loader2,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,75 +27,55 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useBrandStore } from "@/store/brand.store";
+import { toast } from "sonner";
 
-const formBrandSchema = z
-  .object({
-    nombreComercial: z.string().min(2, {
-      message: "El nombre comercial debe tener al menos 2 caracteres.",
-    }),
-    razonSocial: z.string().min(2, {
-      message: "La razón social debe tener al menos 2 caracteres.",
-    }),
-    cuit: z.string().regex(/^\d{2}-\d{8}-\d{1}$/, {
-      message: "El formato debe ser XX-XXXXXXXX-X",
-    }),
-    categoria: z.string().min(1, {
-      message: "Por favor selecciona una categoría.",
-    }),
-    pais: z.string().min(1, {
-      message: "Por favor selecciona un país.",
-    }),
-    email: z.string().email({
-      message: "Por favor ingresa un email válido.",
-    }),
-    password: z
-      .string()
-      .min(8, { message: "La contraseña debe tener al menos 8 caracteres." })
-      .regex(/[A-Z]/, { message: "Debe contener al menos una mayúscula." })
-      .regex(/[a-z]/, { message: "Debe contener al menos una minúscula." })
-      .regex(/[0-9]|[^A-Za-z0-9]/, {
-        message: "Debe contener un número o carácter especial.",
-      }),
-    confirmPassword: z.string(),
-    acceptTerms: z.boolean().refine((val) => val === true, {
-      message: "Debes aceptar los términos y condiciones.",
-    }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Las contraseñas no coinciden.",
-    path: ["confirmPassword"],
-  });
+const formBrandSchema = z.object({
+  name: z.string().min(2, {
+    message: "El nombre debe tener al menos 2 caracteres.",
+  }),
+  description: z.string().min(2, {
+    message: "La descripción debe tener al menos 2 caracteres.",
+  }),
+  websiteUrl: z.string().url({
+    message: "Debe ser una URL válida.",
+  }),
+  country: z.string().min(2, {
+    message: "El pais debe tener al menos 2 caracteres.",
+  }),
+});
 
 export default function RegisterNewBrand() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState({});
+  const { createBrand, isLoading, error } = useBrandStore();
 
   const form = useForm<z.infer<typeof formBrandSchema>>({
     resolver: zodResolver(formBrandSchema),
     defaultValues: {
-      nombreComercial: "",
-      razonSocial: "",
-      cuit: "",
-      categoria: "",
-      pais: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      acceptTerms: false,
+      name: "",
+      description: "",
+      websiteUrl: "",
+      country: "",
     },
   });
 
-  const handleSubmit = () => {
-    console.log("Form submitted successfully:", form.getValues());
-    form.reset();
-    setErrors({});
+  const onSubmit = async (values: z.infer<typeof formBrandSchema>) => {
+    try {
+      await createBrand(values);
+      toast.success("Marca creada exitosamente");
+      form.reset();
+    } catch (error) {
+      toast.error(
+        `Error al crear la marca: ${
+          error instanceof Error ? error.message : "Error desconocido"
+        }`
+      );
+    }
   };
 
   return (
     <div className="min-h-screen py-12 px-4">
       <div className="max-w-7xl mx-auto">
-       <div className="grid md:grid-cols-2 gap-12">
+        <div className="grid md:grid-cols-2 gap-12">
           {/* Left Column */}
           <div className="space-y-8">
             <div>
@@ -145,12 +118,8 @@ export default function RegisterNewBrand() {
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold ">
-                    Certificación Ecológica
-                  </h3>
-                  <p className="text-sm">
-                    Valida tus prácticas sostenibles
-                  </p>
+                  <h3 className="font-semibold ">Certificación Ecológica</h3>
+                  <p className="text-sm">Valida tus prácticas sostenibles</p>
                 </div>
               </div>
 
@@ -160,9 +129,7 @@ export default function RegisterNewBrand() {
                 </div>
                 <div>
                   <h3 className="font-semibold ">Red Global</h3>
-                  <p className="text-sm">
-                    Conecta con compradores conscientes
-                  </p>
+                  <p className="text-sm">Conecta con compradores conscientes</p>
                 </div>
               </div>
 
@@ -171,12 +138,8 @@ export default function RegisterNewBrand() {
                   <Check className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold ">
-                    Gestión Transparente
-                  </h3>
-                  <p className="text-sm ">
-                    Herramientas para tu crecimiento
-                  </p>
+                  <h3 className="font-semibold ">Gestión Transparente</h3>
+                  <p className="text-sm ">Herramientas para tu crecimiento</p>
                 </div>
               </div>
             </div>
@@ -186,26 +149,24 @@ export default function RegisterNewBrand() {
           <Card>
             <CardContent>
               <CardHeader>
-                <h2 className="text-xl font-semibold  mb-1">
-                  Información Empresarial
-                </h2>
+                <h2 className="text-xl font-semibold  mb-1">Información</h2>
                 <p className="text-sm  mb-6">
-                  Completa los datos de tu empresa para comenzar
+                  Completa los datos de la marca 
                 </p>
               </CardHeader>
 
               <Form {...form}>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
                   <FormField
                     control={form.control}
-                    name="nombreComercial"
+                    name="name"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>Telefono</FormLabel>
+                        <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                          <Input placeholder="Telefono" {...field} />
+                          <Input placeholder="Nombre" {...field} />
                         </FormControl>
-                        <FormDescription>Telefono del usuario</FormDescription>
+                        <FormDescription>Nombre de la marca</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -213,15 +174,15 @@ export default function RegisterNewBrand() {
 
                   <FormField
                     control={form.control}
-                    name="razonSocial"
+                    name="description"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>Razón Social</FormLabel>
+                        <FormLabel>Descripción</FormLabel>
                         <FormControl>
-                          <Input placeholder="Razón Social" {...field} />
+                          <Input placeholder="Descripción" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Razón Social del usuario
+                          Descripción de la marca
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -230,120 +191,15 @@ export default function RegisterNewBrand() {
 
                   <FormField
                     control={form.control}
-                    name="cuit"
+                    name="websiteUrl"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>CUIT</FormLabel>
+                        <FormLabel>URL del sitio web</FormLabel>
                         <FormControl>
-                          <Input placeholder="CUIT" {...field} />
-                        </FormControl>
-                        <FormDescription>CUIT del usuario</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <FormField
-                      control={form.control}
-                      name="categoria"
-                      render={({ field }) => (
-                        <FormItem className="mb-4">
-                          <FormLabel>Categoría de Producto</FormLabel>
-                          <FormControl>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar categoría" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="alimentos">
-                                  Alimentos Orgánicos
-                                </SelectItem>
-                                <SelectItem value="textil">
-                                  Textil Sostenible
-                                </SelectItem>
-                                <SelectItem value="cosmetica">
-                                  Cosmética Natural
-                                </SelectItem>
-                                <SelectItem value="limpieza">
-                                  Productos de Limpieza
-                                </SelectItem>
-                                <SelectItem value="otros">Otros</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormDescription>
-                            Categoría del producto
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="pais"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>País</FormLabel>
-                          <FormControl>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Seleccionar país" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="ar">Argentina</SelectItem>
-                                <SelectItem value="br">Brasil</SelectItem>
-                                <SelectItem value="cl">Chile</SelectItem>
-                                <SelectItem value="co">Colombia</SelectItem>
-                                <SelectItem value="mx">México</SelectItem>
-                                <SelectItem value="es">España</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormDescription>País del producto</FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Email" type="email" {...field} />
-                        </FormControl>
-                        <FormDescription>Email del usuario</FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <FormLabel>Contraseña</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="Contraseña"
-                            type="password"
-                            {...field}
-                          />
+                          <Input placeholder="URL del sitio web" {...field} />
                         </FormControl>
                         <FormDescription>
-                          Contraseña del usuario
+                          URL del sitio web de la marca
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -352,55 +208,15 @@ export default function RegisterNewBrand() {
 
                   <FormField
                     control={form.control}
-                    name="confirmPassword"
+                    name="country"
                     render={({ field }) => (
                       <FormItem className="mb-4">
-                        <FormLabel>Confirmar Contraseña</FormLabel>
+                        <FormLabel>País</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="Confirmar Contraseña"
-                            type="password"
-                            {...field}
-                          />
+                          <Input placeholder="País" {...field} />
                         </FormControl>
-                        <FormDescription>
-                          Confirmar Contraseña del usuario
-                        </FormDescription>
+                        <FormDescription>País de la marca</FormDescription>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="acceptTerms"
-                    render={({ field }) => (
-                      <FormItem className="mb-4">
-                        <div className="flex items-start gap-3">
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                              className="mt-0.5 shrink-0"
-                            />
-                          </FormControl>
-                          <FormLabel className="text-sm font-normal text-gray-600 leading-tight cursor-pointer w-full">
-                            <span className="block w-full">
-                              Acepto los{" "}
-                              <span className="text-green-600 font-medium hover:underline cursor-pointer">
-                                Términos y Condiciones
-                              </span>{" "}
-                              y la{" "}
-                              <span className="text-green-600 font-medium hover:underline cursor-pointer">
-                                Política de Privacidad
-                              </span>{" "}
-                              de EcoSupply. Confirmo que la información
-                              proporcionada es veraz y que mi empresa cumple con
-                              los estándares de sostenibilidad requeridos.
-                            </span>
-                          </FormLabel>
-                        </div>
-                        <FormMessage className="ml-8" />
                       </FormItem>
                     )}
                   />
@@ -409,30 +225,14 @@ export default function RegisterNewBrand() {
                     type="submit"
                     className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-base"
                   >
-                    Crear Cuenta →
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Crear Marca"
+                    )}
                   </Button>
                 </form>
               </Form>
-
-              <p className="text-xs text-center text-gray-500 pt-2">
-                Al registrarte, recibirás un correo de verificación para activar
-                tu cuenta
-              </p>
-
-              <div className="flex items-center justify-center gap-4 pt-4 text-xs text-gray-500">
-                <div className="flex items-center gap-1">
-                  <Shield className="w-4 h-4" />
-                  <span>Conexión Segura</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Lock className="w-4 h-4" />
-                  <span>Datos Encriptados</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Database className="w-4 h-4" />
-                  <span>Certificado SSL</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
