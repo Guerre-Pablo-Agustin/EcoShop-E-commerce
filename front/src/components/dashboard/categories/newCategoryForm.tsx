@@ -1,5 +1,4 @@
 import { useCategoryStore } from "@/store/category.store";
-import { Category } from "@/types/Category.types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,43 +31,28 @@ const formSchema = z.object({
     .string()
     .min(3, "La descripción debe tener al menos 3 caracteres"),
   iconUrl: z.string().url("Debe ser una URL válida"),
-  parentCategoryId: z.number().min(1, "Debe seleccionar una categoría padre"),
+  parentCategoryId: z.number().min(1, "Debe seleccionar una categoría padre")
 });
 
-interface EditCategorieProps {
-  category: Category;
-}
-
-const EditCategorieForm = ({ category }: EditCategorieProps) => {
-  const { updateCategory, isLoading, categories } = useCategoryStore();
+const NewCategoryForm = () => {
+  const { createCategory, isLoading, categories } = useCategoryStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: category.name,
-      description: category.description,
-      iconUrl: category.iconUrl,
-      parentCategoryId: category.parentCategoryId,
+      name: "",
+      description: "",
+      iconUrl: "",
+      parentCategoryId: 0,
     },
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-
     try {
-      await updateCategory({
-        ...category,
-        name: data.name,
-        description: data.description,
-        iconUrl: data.iconUrl,
-        parentCategoryId: data.parentCategoryId,
-      });
-      toast.success("Categoría actualizada exitosamente");
+      await createCategory(data);
+      toast.success("Categoría creada exitosamente");
     } catch (error) {
-      toast.error(
-        `Error al actualizar la categoría: ${
-          error instanceof Error ? error.message : "Error desconocido"
-        }`
-      );
+      toast.error("Error al crear la categoría");
     }
   };
 
@@ -162,12 +146,12 @@ const EditCategorieForm = ({ category }: EditCategorieProps) => {
                   </FormItem>
                 )}
               />
-             
+              
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
-                  "Actualizar"
+                  "Crear"
                 )}
               </Button>
             </form>
@@ -178,4 +162,4 @@ const EditCategorieForm = ({ category }: EditCategorieProps) => {
   );
 };
 
-export default EditCategorieForm;
+export default NewCategoryForm;

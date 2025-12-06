@@ -67,12 +67,12 @@ export const getColumns = (): ColumnDef<Category>[] => [
     header: "Descripcion",
   },
   {
-    accessorKey: "iconUrl",
-    header: "Icono",
-  },
-  {
     accessorKey: "parentCategoryId",
     header: "Categoria Padre",
+  },
+  {
+    accessorKey: "subCategories",
+    header: "Subcategorias",
   },
   {
     id: "actions",

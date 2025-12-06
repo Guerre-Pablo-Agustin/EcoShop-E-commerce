@@ -27,6 +27,8 @@ const EditCategorie = () => {
     return <div>No se encontró la categoria</div>;
   }
 
+  console.log("currentCategory", currentCategory);
+
   return (
     <div>
       <EditCategorieForm category={currentCategory!} />

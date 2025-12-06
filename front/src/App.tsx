@@ -15,6 +15,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import MainUser from "./pages/Dahboard/User/MainUser";
 import IndexCategories from "./pages/Dahboard/categories";
 
+
+
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
 const ProductDetail = lazy(() => import("./pages/Product/ProductDetail"));
@@ -41,6 +43,8 @@ const PageGreenMetrics = lazy(
 const EditCategorie = lazy(
   () => import("./pages/Dahboard/categories/editCategoriePage")
 );
+const NewCategoryPage = lazy(() => import("./pages/Dahboard/categories/newCategoryPage"));
+
 
 const queryClient = new QueryClient();
 
@@ -132,6 +136,10 @@ const App = () => (
               <Route
                 path={routes.dashboardCategorias}
                 element={<IndexCategories />}
+              />
+              <Route
+                path={routes.dashboardCategoriasNuevo}
+                element={<NewCategoryPage />}
               />
               <Route
                 path={routes.dashboardCategoriasEditar}
