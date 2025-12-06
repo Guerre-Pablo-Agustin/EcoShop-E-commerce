@@ -18,10 +18,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { routes } from "@/lib/routes";
-import { Brand } from "@/types/Brand.types";
+import { Certification } from "@/types/Certification.types";
 
 // Función para generar las columnas con las acciones
-export const getColumns = (): ColumnDef<Brand>[] => [
+export const getColumns = (): ColumnDef<Certification>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -67,13 +67,17 @@ export const getColumns = (): ColumnDef<Brand>[] => [
     header: "Descripcion",
   },
   {
-    accessorKey: "country",
-    header: "Pais",
+    accessorKey: "organization",
+    header: "Organizacion",
+  },
+  {
+    accessorKey: "certificationUrl",
+    header: "URL",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const marca = row.original;
+      const categoria = row.original;
 
       return (
         <DropdownMenu>
@@ -86,12 +90,17 @@ export const getColumns = (): ColumnDef<Brand>[] => [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(marca.id)}
+              onClick={() => navigator.clipboard.writeText(categoria.id.toString())}
             >
               Copiar ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <Link to={routes.dashboardMarcasEditar.replace(":id", marca.id)}>
+            <Link
+              to={routes.dashboardCertificationsEditar.replace(
+                ":id",
+                categoria.id.toString()
+              )}
+            >
               <DropdownMenuItem>
                 Editar <List className="ml-1 h-4 w-4" />
               </DropdownMenuItem>
