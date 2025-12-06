@@ -71,10 +71,6 @@ export const getColumns = (): ColumnDef<Category>[] => [
     header: "Categoria Padre",
   },
   {
-    accessorKey: "subCategories",
-    header: "Subcategorias",
-  },
-  {
     id: "actions",
     cell: ({ row }) => {
       const categoria = row.original;
