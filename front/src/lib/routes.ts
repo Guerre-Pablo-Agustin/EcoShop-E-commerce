@@ -50,4 +50,9 @@ export const routes = {
   dashboardUsersEditar: "/dashboard/users/edit/:id",
   dashboardUsersFavoritos: "/dashboard/users/favorites",
 
+//dashboard/categories
+  dashboardCategorias: "/dashboard/categories",
+  dashboardCategoriasNuevo: "/dashboard/categories/new",
+  dashboardCategoriasEditar: "/dashboard/categories/edit/:id",
+
 };

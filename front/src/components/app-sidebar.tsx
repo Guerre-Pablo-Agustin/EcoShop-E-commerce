@@ -123,6 +123,12 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
       url: routes.dashboardMarcas,
       isActive: false,
     },
+    {
+      title: "Categorias",
+      icon: List,
+      url: routes.dashboardCategorias,
+      isActive: false,
+    },
   ],
 };
 

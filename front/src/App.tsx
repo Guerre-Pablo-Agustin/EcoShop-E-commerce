@@ -13,6 +13,7 @@ import NotFound from "./pages/NotFound";
 import IndexCustomers from "./pages/Dahboard/Customers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import MainUser from "./pages/Dahboard/User/MainUser";
+import IndexCategories from "./pages/Dahboard/categories";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -29,13 +30,16 @@ const IndexDasboard = lazy(() => import("./pages/Dahboard/IndexDasboard"));
 const MainProducts = lazy(() => import("./pages/Dahboard/Productos/main"));
 const IndexBrands = lazy(() => import("./pages/Dahboard/Brands/indexBrands"));
 const NewBrand = lazy(() => import("./pages/Dahboard/Brands/newBrand"));
-const EditBrand = lazy(() => import("./pages/Dahboard/Brands/editBrand"));
+const EditBrand = lazy(() => import("./pages/Dahboard/Brands/editBrandPage"));
 const NewProduct = lazy(() => import("./pages/Dahboard/Productos/newProduct"));
 const EditProduct = lazy(
   () => import("./pages/Dahboard/Productos/editProduct")
 );
 const PageGreenMetrics = lazy(
   () => import("./pages/Dahboard/GreenMetrics/PageGreenMetrics")
+);
+const EditCategorie = lazy(
+  () => import("./pages/Dahboard/categories/editCategoriePage")
 );
 
 const queryClient = new QueryClient();
@@ -122,6 +126,16 @@ const App = () => (
               <Route
                 path={routes.dashboardClientes}
                 element={<IndexCustomers />}
+              />
+
+              {/* Rutas de categorias */}
+              <Route
+                path={routes.dashboardCategorias}
+                element={<IndexCategories />}
+              />
+              <Route
+                path={routes.dashboardCategoriasEditar}
+                element={<EditCategorie />}
               />
             </Route>
 
