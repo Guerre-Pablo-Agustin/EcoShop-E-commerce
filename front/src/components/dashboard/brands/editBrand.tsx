@@ -10,49 +10,65 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Brand } from "@/data/products";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import { Brand } from "@/types/Brand.types";
+import { useBrandStore } from "@/store/brand.store";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   brand: Brand;
 }
 
 const formBrandSchema = z.object({
-  id: z.string(),
   name: z.string().min(2, {
     message: "El nombre debe tener al menos 2 caracteres.",
-  }),
-  logo: z.string().url({
-    message: "Debe ser una URL válida.",
   }),
   description: z.string().min(10, {
     message: "La descripción debe tener al menos 10 caracteres.",
   }),
-  website: z.string().url({
+  websiteUrl: z.string().url({
     message: "Debe ser una URL válida.",
   }),
-  sustentabilityStory: z.string().min(10, {
-    message:
-      "La historia de sustentabilidad debe tener al menos 10 caracteres.",
+  country: z.string().min(2, {
+    message: "El pais debe tener al menos 2 caracteres.",
   }),
 });
 
 const EditBrandForm = ({ brand }: Props) => {
+  const { updateBrand, isLoading, error } = useBrandStore();
+
   const form = useForm<z.infer<typeof formBrandSchema>>({
     resolver: zodResolver(formBrandSchema),
-    defaultValues: brand,
+    defaultValues: {
+      name: brand.name,
+      description: brand.description,
+      websiteUrl: brand.websiteUrl,
+      country: brand.country,
+    },
   });
 
-  const handleSubmit = (values: z.infer<typeof formBrandSchema>) => {
-    console.log("Marca actualizada:", values);
-    // Aquí iría la lógica para actualizar la marca
+  const handleSubmit = async (values: z.infer<typeof formBrandSchema>) => {
+    try {
+      await updateBrand({
+        ...brand,
+        ...values,
+      });
+      toast.success("Marca actualizada exitosamente");
+    } catch (error) {
+      toast.error(
+        `Error al crear la marca: ${
+          error instanceof Error ? error.message : "Error desconocido"
+        }`
+      );
+    }
   };
 
   return (
-    <Card className="p-6 w-full">
+    <Card className="p-6 w-full bg-sidebar">
       <CardContent>
         <CardHeader>
           <h2 className="text-2xl font-bold mb-4">Editar Marca</h2>
@@ -81,27 +97,6 @@ const EditBrandForm = ({ brand }: Props) => {
               )}
             />
 
-            {/* Logo URL */}
-            <FormField
-              control={form.control}
-              name="logo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>URL del Logo</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="https://ejemplo.com/logo.png"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    URL de la imagen del logo de la marca
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             {/* Descripción */}
             <FormField
               control={form.control}
@@ -123,7 +118,7 @@ const EditBrandForm = ({ brand }: Props) => {
             {/* Sitio Web */}
             <FormField
               control={form.control}
-              name="website"
+              name="websiteUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Sitio Web</FormLabel>
@@ -141,15 +136,12 @@ const EditBrandForm = ({ brand }: Props) => {
             {/* Historia de Sustentabilidad */}
             <FormField
               control={form.control}
-              name="sustentabilityStory"
+              name="country"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Historia de Sustentabilidad</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Historia de sustentabilidad de la marca"
-                      {...field}
-                    />
+                    <Input placeholder="Pais" {...field} />
                   </FormControl>
                   <FormDescription>
                     Describe el compromiso de la marca con la sustentabilidad
@@ -168,7 +160,13 @@ const EditBrandForm = ({ brand }: Props) => {
               >
                 Cancelar
               </Button>
-              <Button type="submit">Guardar Cambios</Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  "Guardar Cambios"
+                )}
+              </Button>
             </div>
           </form>
         </Form>
