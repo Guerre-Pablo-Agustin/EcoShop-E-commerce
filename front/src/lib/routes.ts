@@ -55,4 +55,10 @@ export const routes = {
   dashboardCategoriasNuevo: "/dashboard/categories/new",
   dashboardCategoriasEditar: "/dashboard/categories/edit/:id",
 
+
+//dashboard/certifications
+  dashboardCertifications: "/dashboard/certifications",
+  dashboardCertificationsNuevo: "/dashboard/certifications/new",
+  dashboardCertificationsEditar: "/dashboard/certifications/edit/:id",
+
 };

@@ -1,4 +1,4 @@
-import EditBrandForm from "@/components/dashboard/brands/editBrand";
+ import EditBrandForm from "@/components/dashboard/brands/editBrand";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useBrandStore } from "@/store/brand.store";

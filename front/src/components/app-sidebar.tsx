@@ -14,6 +14,7 @@ import {
   Heart,
   type LucideIcon,
   List,
+  StickyNote,
 } from "lucide-react";
 import logoImage from "../assets/EcoShop_Logo.svg";
 import logoDarkImage from "../assets/Logo_Dark.png";
@@ -129,6 +130,12 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
       url: routes.dashboardCategorias,
       isActive: false,
     },
+    {
+      title: "Certificaciones",
+      icon: StickyNote,
+      url: routes.dashboardCertifications,
+      isActive: false,
+    }
   ],
 };
 

@@ -15,8 +15,6 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import MainUser from "./pages/Dahboard/User/MainUser";
 import IndexCategories from "./pages/Dahboard/categories";
 
-
-
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
 const ProductDetail = lazy(() => import("./pages/Product/ProductDetail"));
@@ -43,8 +41,21 @@ const PageGreenMetrics = lazy(
 const EditCategorie = lazy(
   () => import("./pages/Dahboard/categories/editCategoriePage")
 );
-const NewCategoryPage = lazy(() => import("./pages/Dahboard/categories/newCategoryPage"));
+const NewCategoryPage = lazy(
+  () => import("./pages/Dahboard/categories/newCategoryPage")
+);
 
+const CertificationsPage = lazy(
+  () => import("./pages/Dahboard/Certifications/CertificationsPage")
+);
+
+const NewCertificationPage = lazy(
+  () => import("./pages/Dahboard/Certifications/NewCertificationPage")
+);
+
+const EditCertificationPage = lazy(
+  () => import("./pages/Dahboard/Certifications/EditCertificationPage")
+);
 
 const queryClient = new QueryClient();
 
@@ -144,6 +155,22 @@ const App = () => (
               <Route
                 path={routes.dashboardCategoriasEditar}
                 element={<EditCategorie />}
+              />
+
+
+              {/* Rutas de certificaciones */}
+              <Route
+                path={routes.dashboardCertifications}
+                element={<CertificationsPage />}
+              />
+              <Route
+                path={routes.dashboardCertificationsNuevo}
+                element={<NewCertificationPage />}
+              />
+
+              <Route
+                path={routes.dashboardCertificationsEditar}
+                element={<EditCertificationPage />}
               />
             </Route>
 
