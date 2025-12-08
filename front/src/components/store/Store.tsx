@@ -76,7 +76,7 @@ export default function Store() {
           (product) =>
             product.name.toLowerCase().includes(search.toLowerCase()) ||
             product.description.toLowerCase().includes(search.toLowerCase()) ||
-            product.category.toLowerCase().includes(search.toLowerCase())
+            product.categoryId.toString().includes(search.toLowerCase())
         );
       }
 
