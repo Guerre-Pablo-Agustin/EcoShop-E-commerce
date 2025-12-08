@@ -3,8 +3,8 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Leaf, Heart, ShoppingBag } from "lucide-react";
-import { Product } from "@/data/products";
 import { useCartActions } from "@/store/cart.store";
+import { Product } from "@/types/Product.types";
 
 interface ProductCardProps {
   product: Product;
@@ -20,13 +20,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       <Link to={`/product/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-50">
           <img
-            src={product.image[0]}
+            src={product.imageUrl}
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          
+
           {/* Heart Icon */}
-          <button 
+          <button
             className="absolute top-4 right-4 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors z-10"
             onClick={(e) => {
               e.preventDefault();
@@ -37,7 +37,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </button>
 
           {/* Badges en la parte inferior */}
-          <div className="absolute bottom-3 left-3 flex gap-2">
+          {/* <div className="absolute bottom-3 left-3 flex gap-2">
             <Badge className="bg-white/90 backdrop-blur-sm text-gray-800 border-0 shadow-sm flex items-center gap-1">
               <Leaf className="h-3 w-3 text-green-600" />
               <span className="text-xs font-medium">Hemp</span>
@@ -45,14 +45,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <Badge className="bg-white/90 backdrop-blur-sm text-gray-800 border-0 shadow-sm">
               <span className="text-xs font-medium">Comercio justo</span>
             </Badge>
-          </div>
+          </div> */}
         </div>
       </Link>
 
       <CardContent className="p-4">
         <Link to={`/product/${product.id}`}>
           <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
-            {product.category}
+            {product.categoryName}
           </p>
           <h3 className="font-bold text-base mb-3 line-clamp-2 text-gray-900 group-hover:text-green-600 transition-colors">
             {product.name}
@@ -70,8 +70,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <span className="text-2xl font-bold text-gray-900">
           €{product.price.toFixed(2)}
         </span>
-        <Button 
-         onClick={() => addItem(product, 1)}
+        <Button
+          onClick={() => addItem(product, 1)}
           className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2 font-medium transition-colors flex items-center gap-2"
           size="sm"
         >
