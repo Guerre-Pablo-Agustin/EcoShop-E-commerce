@@ -14,11 +14,11 @@ interface ProductStore {
 
   // Actions
   fetchProducts: () => Promise<void>;
-  fetchProductById: (id: string) => Promise<void>;
+  fetchProductById: (id: number) => Promise<void>;
   fetchProductsByBrand: (brandId: number) => Promise<void>;
   createProduct: (product: CreateProductDto) => Promise<void>;
-  updateProduct: (id: string, product: UpdateProductDto) => Promise<void>;
-  deleteProduct: (id: string) => Promise<void>;
+  updateProduct: (id: number, product: UpdateProductDto) => Promise<void>;
+  deleteProduct: (id: number) => Promise<void>;
   setSelectedProduct: (product: Product | null) => void;
   clearError: () => void;
 }
@@ -45,7 +45,7 @@ export const useProductStore = create<ProductStore>((set) => ({
   },
 
   // Obtener producto por ID
-  fetchProductById: async (id: string) => {
+  fetchProductById: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
       const product = await productApi.getById(id);
@@ -111,7 +111,7 @@ export const useProductStore = create<ProductStore>((set) => ({
   },
 
   // Actualizar producto
-  updateProduct: async (id: string, product: UpdateProductDto) => {
+  updateProduct: async (id: number, product: UpdateProductDto) => {
     set({ isLoading: true, error: null });
     try {
       const updatedProduct = await productApi.update(id, product);
@@ -142,7 +142,7 @@ export const useProductStore = create<ProductStore>((set) => ({
   },
 
   // Eliminar producto
-  deleteProduct: async (id: string) => {
+  deleteProduct: async (id: number) => {
     set({ isLoading: true, error: null });
     try {
       await productApi.delete(id);

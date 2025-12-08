@@ -16,9 +16,9 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
-import { Product } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 import { routes } from "@/lib/routes";
+import { Product } from "@/types/Product.types";
 
 // Función para generar las columnas con las acciones
 export const getColumns = (): ColumnDef<Product>[] => [
@@ -63,7 +63,7 @@ export const getColumns = (): ColumnDef<Product>[] => [
     header: "Producto",
   },
   {
-    accessorKey: "category",
+    accessorKey: "categoryName",
     header: "categoria",
   },
   {
@@ -90,7 +90,7 @@ export const getColumns = (): ColumnDef<Product>[] => [
 
       return (
         <div className="flex items-center gap-2">
-          <div className="w-32">
+          <div className="w-8">
             <Badge
               variant="outline"
               className={`text-white px-1.5 ${statusColor(product.isActive)}`}
@@ -102,25 +102,37 @@ export const getColumns = (): ColumnDef<Product>[] => [
       );
     },
   },
+  // {
+  //   accessorKey: "impact",
+  //   header: "Impacto Ambiental",
+  //   cell: ({ row }) => {
+  //     const product = row.original;
+  //     return (
+  //       <div className="flex items-center gap-2">
+  //         <div className="flex items-center text-green-600">
+  //           <Leaf className="h-4 w-4 inline-block mr-1" />
+  //           {product.impact.recyclable}%
+  //         </div>
+  //         <div className="flex items-center text-gray-600">
+  //           <div className="text-sm">CO₂</div>
+  //           {product.impact.carbonFootprint}%
+  //         </div>
+  //         <div className="flex items-center">
+  //           <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
+  //           {product.impact.waterUsage}%
+  //         </div>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
-    accessorKey: "impact",
-    header: "Impacto Ambiental",
+    accessorKey: "stock",
+    header: "Stock",
     cell: ({ row }) => {
       const product = row.original;
       return (
         <div className="flex items-center gap-2">
-          <div className="flex items-center text-green-600">
-            <Leaf className="h-4 w-4 inline-block mr-1" />
-            {product.impact.recyclable}%
-          </div>
-          <div className="flex items-center text-gray-600">
-            <div className="text-sm">CO₂</div>
-            {product.impact.carbonFootprint}%
-          </div>
-          <div className="flex items-center">
-            <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
-            {product.impact.waterUsage}%
-          </div>
+          {product.stock}
         </div>
       );
     },

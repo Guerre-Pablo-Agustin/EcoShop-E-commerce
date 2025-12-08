@@ -8,24 +8,26 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-
-const brandSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, {
-    message: "Por favor selecciona un fabricante.",
-  }),
-  logo: z.string(),
-  description: z.string(),
-  website: z.string(),
-  sustentabilityStory: z.string(),
-});
+import { useCategoryStore } from "@/store/category.store";
+import { Loader2 } from "lucide-react";
+import { useBrandStore } from "@/store/brand.store";
+import { useCertificationStore } from "@/store/certification.store";
+import { toast } from "sonner";
+import { useProductStore } from "@/store/product.store";
 
 const formProductSchema = z.object({
   name: z.string().min(2, {
@@ -37,96 +39,103 @@ const formProductSchema = z.object({
   price: z.number().min(0, {
     message: "El precio debe ser mayor o igual a 0",
   }),
-  image: z.array(z.string()).min(1, {
-    message: "Por favor selecciona al menos una imagen.",
-  }),
-  category: z.string().min(1, {
-    message: "Por favor selecciona una categoría.",
-  }),
-  impact: z.object({
-    carbonFootprint: z.number().min(0, {
-      message: "El valor debe ser mayor o igual a 0",
-    }),
-    waterUsage: z.number().min(0, {
-      message: "El valor debe ser mayor o igual a 0",
-    }),
-    transportDistance: z.number().min(0, {
-      message: "El valor debe ser mayor o igual a 0",
-    }),
-    recyclable: z.number().min(0, {
-      message: "El valor debe ser mayor o igual a 0",
-    }),
+  imageUrl: z.string().min(1, {
+    message: "Agrega la url de la imagen",
   }),
   stock: z.number().min(0, {
     message: "El stock debe ser mayor o igual a 0",
   }),
-  brand: brandSchema,
-  certifications: z
-    .array(z.string())
-    .min(1, { message: "Por favor selecciona al menos una certificación." }),
-  materials: z.array(
-    z.object({
-      name: z.string().min(1, {
-        message: "Por favor selecciona un material.",
-      }),
-      percentage: z.number().min(0, {
-        message: "Por favor selecciona un porcentaje de materiales.",
-      }),
-      color: z.string().min(1, {
-        message: "Por favor selecciona un color.",
-      }),
-    })
-  ),
-  origin: z.object({
-    text: z.string().min(1, {
-      message: "Por favor selecciona un origen.",
+  brandId: z.number().min(1, {
+    message: "Por favor selecciona una marca.",
+  }),
+  categoryId: z.number().min(1, {
+    message: "Por favor selecciona una categoría.",
+  }),
+  environmentalData: z.object({
+    carbonFootprint: z.number().min(0, {
+      message: "El valor debe ser mayor o igual a 0",
     }),
+    material: z.string().min(1, {
+      message: "Por favor ingresa el material",
+    }),
+    countryOfOrigin: z.string().min(1, {
+      message: "Por favor ingresa el país de origen",
+    }),
+    energyConsumption: z.number().min(0, {
+      message: "El valor debe ser mayor o igual a 0",
+    }),
+    recyclablePercentage: z.number().min(0).max(100, {
+      message: "El valor debe estar entre 0 y 100",
+    }),
+    notes: z.string().optional(),
   }),
-  rating: z.number().min(0, {
-    message: "Por favor califica la calidad del producto.",
-  }),
-  isActive: z.boolean(),
+  certificationIds: z
+    .array(z.number())
+    .min(1, { message: "Por favor selecciona al menos una certificación." }),
 });
 
 const NuevoProducto = () => {
+
+
+  const { createProduct } = useProductStore();
+
+
   const form = useForm<z.infer<typeof formProductSchema>>({
     resolver: zodResolver(formProductSchema),
     defaultValues: {
       name: "",
       description: "",
       price: 0,
-      image: [],
-      category: "",
-      impact: {
-        carbonFootprint: 0,
-        waterUsage: 0,
-        transportDistance: 0,
-        recyclable: 0,
-      },
+      imageUrl: "",
       stock: 0,
-      brand: {
-        id: "",
-        name: "",
-        logo: "",
-        description: "",
-        website: "",
-        sustentabilityStory: "",
+      brandId: 0,
+      categoryId: 0,
+      environmentalData: {
+        carbonFootprint: 0,
+        material: "",
+        countryOfOrigin: "",
+        energyConsumption: 0,
+        recyclablePercentage: 0,
+        notes: "",
       },
-      certifications: [],
-      materials: [],
-      origin: {
-        text: "",
-      },
-      rating: 0,
-      isActive: true,
+      certificationIds: [],
     },
   });
 
-  const handleSubmit = (values: z.infer<typeof formProductSchema>) => {
-    console.log("Nuevo producto creado:", values);
-    // Aquí iría la lógica para crear el producto
-    form.reset();
+  const handleSubmit = async (values: z.infer<typeof formProductSchema>) => {
+    try {
+      await createProduct(values);
+      toast.success("Producto creado exitosamente");
+    } catch (error) {
+      toast.error("Error al crear el producto");
+    }
   };
+
+  const {
+    fetchCategories,
+    categories,
+    isLoading: loadingCategories,
+  } = useCategoryStore();
+  const { fetchBrands, brands, isLoading: loadingBrands } = useBrandStore();
+  const {
+    fetchCertifications,
+    certifications,
+    isLoading: loadingCerts,
+  } = useCertificationStore();
+
+  useEffect(() => {
+    fetchCategories();
+    fetchBrands();
+    fetchCertifications();
+  }, [fetchCategories, fetchBrands, fetchCertifications]);
+
+  if (loadingCategories || loadingBrands || loadingCerts) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loader2 className="animate-spin h-8 w-8" />
+      </div>
+    );
+  }
 
   return (
     <Card className="p-6 w-full">
@@ -176,9 +185,30 @@ const NuevoProducto = () => {
               )}
             />
 
-            {/*precio y marca*/}
+            {/* Imágenes */}
+            <FormField
+              control={form.control}
+              name="imageUrl"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Imagen</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="URL de la imagen"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Agrega la url de la imagen del producto
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Precio y Stock */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Precio */}
               <FormField
                 control={form.control}
                 name="price"
@@ -188,10 +218,11 @@ const NuevoProducto = () => {
                     <FormControl>
                       <Input
                         type="number"
+                        step="0.01"
                         placeholder="0.00"
                         {...field}
                         onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
+                          field.onChange(parseFloat(e.target.value) || 0)
                         }
                       />
                     </FormControl>
@@ -203,7 +234,6 @@ const NuevoProducto = () => {
                 )}
               />
 
-              {/* Stock */}
               <FormField
                 control={form.control}
                 name="stock"
@@ -216,7 +246,7 @@ const NuevoProducto = () => {
                         placeholder="0"
                         {...field}
                         onChange={(e) =>
-                          field.onChange(parseInt(e.target.value))
+                          field.onChange(parseInt(e.target.value) || 0)
                         }
                       />
                     </FormControl>
@@ -229,224 +259,286 @@ const NuevoProducto = () => {
               />
             </div>
 
-            {/* Categoría */}
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Categoría</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Categoría del producto" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Categoría a la que pertenece el producto
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Marca - Nombre */}
-            <FormField
-              control={form.control}
-              name="brand.name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Marca</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre de la marca" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Nombre del fabricante o marca
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Origen */}
-            <FormField
-              control={form.control}
-              name="origin.text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Origen</FormLabel>
-                  <FormControl>
-                    <Input placeholder="País o región de origen" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Lugar de procedencia del producto
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Rating */}
-            <FormField
-              control={form.control}
-              name="rating"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Calificación</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      max="5"
-                      placeholder="0.0"
-                      {...field}
-                      onChange={(e) =>
-                        field.onChange(parseFloat(e.target.value))
-                      }
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Calificación del producto (0-5)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Impacto Ambiental */}
-            <Card className="mt-4" >
-                <CardHeader>
-                  <CardTitle>Impacto Ambiental</CardTitle>
-                </CardHeader>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 py-2">
-              {/* Impacto Ambiental - Huella de Carbono */}
+            {/* Categoría y Marca */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="impact.carbonFootprint"
+                name="categoryId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Huella de Carbono</FormLabel>
+                    <FormLabel>Categoría</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(parseInt(value))
                         }
-                      />
+                        value={field.value > 0 ? field.value.toString() : ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una categoría" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background">
+                          {categories.map((category) => (
+                            <SelectItem
+                              key={category.id}
+                              value={category.id.toString()}
+                              className="bg-background text-foreground"
+                            >
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormDescription>
-                      Huella de carbono en kg CO2
+                      Categoría a la que pertenece el producto
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Impacto Ambiental - Uso de Agua */}
               <FormField
                 control={form.control}
-                name="impact.waterUsage"
+                name="brandId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Uso de Agua</FormLabel>
+                    <FormLabel>Marca</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
+                      <Select
+                        onValueChange={(value) =>
+                          field.onChange(parseInt(value))
                         }
-                      />
+                        value={field.value > 0 ? field.value.toString() : ""}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecciona una marca" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-background">
+                          {brands.map((brand) => (
+                            <SelectItem
+                              key={brand.id}
+                              value={brand.id.toString()}
+                              className="bg-background text-foreground"
+                            >
+                              {brand.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
-                    <FormDescription>Consumo de agua en litros</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Impacto Ambiental - Distancia de Transporte */}
-              <FormField
-                control={form.control}
-                name="impact.transportDistance"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Distancia de Transporte</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.01"
-                        placeholder="0.00"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Distancia de transporte en km
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Impacto Ambiental - Porcentaje Reciclable */}
-              <FormField
-                control={form.control}
-                name="impact.recyclable"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Porcentaje Reciclable</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        placeholder="0"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseFloat(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Porcentaje del producto que es reciclable (0-100)
-                    </FormDescription>
+                    <FormDescription>Marca del producto</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            </Card>
 
-
-            {/* Estado Activo */}
+            {/* Certificaciones */}
             <FormField
               control={form.control}
-              name="isActive"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Producto Activo</FormLabel>
+              name="certificationIds"
+              render={() => (
+                <FormItem>
+                  <div className="mb-4">
+                    <FormLabel className="text-base">Certificaciones</FormLabel>
                     <FormDescription>
-                      Marca si el producto está disponible para la venta
+                      Selecciona todas las certificaciones que apliquen
                     </FormDescription>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {certifications.map((certification) => (
+                      <FormField
+                        key={certification.id}
+                        control={form.control}
+                        name="certificationIds"
+                        render={({ field }) => {
+                          return (
+                            <FormItem
+                              key={certification.id}
+                              className="flex flex-row items-start space-x-3 space-y-0"
+                            >
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value?.includes(
+                                    certification.id
+                                  )}
+                                  onCheckedChange={(checked) => {
+                                    return checked
+                                      ? field.onChange([
+                                          ...field.value,
+                                          certification.id,
+                                        ])
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) =>
+                                              value !== certification.id
+                                          )
+                                        );
+                                  }}
+                                />
+                              </FormControl>
+                              <FormLabel className="font-normal">
+                                {certification.name}
+                              </FormLabel>
+                            </FormItem>
+                          );
+                        }}
+                      />
+                    ))}
                   </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Botón de Envío */}
+            {/* Datos Ambientales */}
+            <Card className="mt-4">
+              <CardHeader>
+                <CardTitle>Datos Ambientales</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="environmentalData.carbonFootprint"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Huella de Carbono</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            }
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Huella de carbono en kg CO₂
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="environmentalData.energyConsumption"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Consumo de Energía</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            }
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Consumo de energía en kWh
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="environmentalData.recyclablePercentage"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Porcentaje Reciclable</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min="0"
+                            max="100"
+                            placeholder="0"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(parseFloat(e.target.value) || 0)
+                            }
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Porcentaje reciclable (0-100)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="environmentalData.material"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Material</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Ej: Algodón orgánico"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Material principal del producto
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <FormField
+                  control={form.control}
+                  name="environmentalData.countryOfOrigin"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>País de Origen</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="País o región de origen"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Lugar de procedencia del producto
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="environmentalData.notes"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notas Adicionales</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Información adicional (opcional)"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Cualquier información ambiental adicional
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Botones */}
             <div className="flex justify-end gap-4">
               <Button
                 type="button"

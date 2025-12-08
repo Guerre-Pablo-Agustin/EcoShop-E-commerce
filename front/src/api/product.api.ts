@@ -4,37 +4,43 @@ export interface CreateProductDto {
   name: string;
   description: string;
   price: number;
-  image: string[];
-  category: string;
-  impact: {
-    carbonFootprint: number;
-    recyclable: number;
-    waterUsage: number;
-    transportDistance: number;
-  };
+  imageUrl: string;
   stock: number;
   brandId: number;
-  certifications: string[];
-  materials: Array<{
-    name: string;
-    percentage: number;
-    color: string;
-  }>;
-  origin: {
-    text: string;
+  categoryId: number;
+  environmentalData: {
+    carbonFootprint: number;
+    material: string;
+    countryOfOrigin: string;
+    energyConsumption: number;
+    recyclablePercentage: number;
+    notes?: string;
   };
-  rating: number;
-  reviews: number;
-  isActive: boolean;
+  certificationIds: number[];
 }
 
-export interface UpdateProductDto extends Partial<CreateProductDto> {
-  id: string;
+export interface UpdateProductDto {
+  name: string;
+  description: string;
+  price: number;
+  imageUrl: string;
+  stock: number;
+  brandId: number;
+  categoryId: number;
+  environmentalData: {
+    carbonFootprint: number;
+    material: string;
+    countryOfOrigin: string;
+    energyConsumption: number;
+    recyclablePercentage: number;
+    notes?: string;
+  },
+  certificationIds: number[];
 }
 
 export const productApi = {
   // Obtener producto por ID (GET)
-  getById: async (id: string): Promise<Product | null> => {
+  getById: async (id: number): Promise<Product | null> => {
     try {
       const response = await fetch(`/api/products/${id}`, {
         method: "GET",
@@ -54,7 +60,7 @@ export const productApi = {
 
   // Actualizar producto (PUT)
   update: async (
-    id: string,
+    id: number,
     product: UpdateProductDto
   ): Promise<Product | null> => {
     try {
@@ -76,7 +82,7 @@ export const productApi = {
   },
 
   // Eliminar producto (DELETE)
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: number): Promise<void> => {
     try {
       const response = await fetch(`/api/products/${id}`, {
         method: "DELETE",
