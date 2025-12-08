@@ -38,18 +38,21 @@ interface CartStore {
 // Helper para calcular totales
 const calculateTotals = (items: CartItem[]) => {
   const total = items.reduce((sum, item) => sum + item.subTotal, 0);
-  const estimatedCarbonFootprint = items.reduce(
-    (sum, item) => sum + item.itemCarbonFootprint,
-    0
-  );
-  return { total, estimatedCarbonFootprint };
+  // const estimatedCarbonFootprint = items.reduce(
+  //   (sum, item) => sum + item.itemCarbonFootprint,
+  //   0
+  // );
+  return {
+    total,
+    // estimatedCarbonFootprint
+  };
 };
 
 // Helper para crear CartItem desde Product
 const createCartItem = (product: Product, quantity: number = 1): CartItem => {
   const unitPrice = product.price;
   const subTotal = unitPrice * quantity;
-  const itemCarbonFootprint = product.impact.carbonFootprint * quantity;
+  // const itemCarbonFootprint = product.environmentalData.carbonFootprint * quantity;
 
   return {
     id: `${product.id}-${Date.now()}`, // ID único para el item del carrito
@@ -57,7 +60,7 @@ const createCartItem = (product: Product, quantity: number = 1): CartItem => {
     quantity,
     unitPrice,
     subTotal,
-    itemCarbonFootprint,
+    // itemCarbonFootprint,
   };
 };
 
@@ -98,8 +101,8 @@ export const useCartStore = create<CartStore>()(
                   ...item,
                   quantity: newQuantity,
                   subTotal: item.unitPrice * newQuantity,
-                  itemCarbonFootprint:
-                    product.impact.carbonFootprint * newQuantity,
+                  // itemCarbonFootprint:
+                  //   product.environmentalData.carbonFootprint * newQuantity,
                 };
               }
               return item;
@@ -110,14 +113,17 @@ export const useCartStore = create<CartStore>()(
             newItems = [...state.cart.items, newItem];
           }
 
-          const { total, estimatedCarbonFootprint } = calculateTotals(newItems);
+          const { 
+            total, 
+            // estimatedCarbonFootprint 
+          } = calculateTotals(newItems);
 
           return {
             cart: {
               ...state.cart,
               items: newItems,
               total,
-              estimatedCarbonFootprint,
+              // estimatedCarbonFootprint,
               updatedAt: new Date(),
             },
           };
@@ -129,14 +135,17 @@ export const useCartStore = create<CartStore>()(
           const newItems = state.cart.items.filter(
             (item) => item.id !== itemId
           );
-          const { total, estimatedCarbonFootprint } = calculateTotals(newItems);
+          const { 
+            total, 
+            // estimatedCarbonFootprint
+           } = calculateTotals(newItems);
 
           return {
             cart: {
               ...state.cart,
               items: newItems,
               total,
-              estimatedCarbonFootprint,
+              // estimatedCarbonFootprint,
               updatedAt: new Date(),
             },
           };
@@ -150,7 +159,10 @@ export const useCartStore = create<CartStore>()(
             const newItems = state.cart.items.filter(
               (item) => item.id !== itemId
             );
-            const { total, estimatedCarbonFootprint } =
+            const { 
+              total, 
+              // estimatedCarbonFootprint 
+            } =
               calculateTotals(newItems);
 
             return {
@@ -158,7 +170,7 @@ export const useCartStore = create<CartStore>()(
                 ...state.cart,
                 items: newItems,
                 total,
-                estimatedCarbonFootprint,
+                //
                 updatedAt: new Date(),
               },
             };
@@ -171,20 +183,23 @@ export const useCartStore = create<CartStore>()(
                 quantity,
                 subTotal: item.unitPrice * quantity,
                 itemCarbonFootprint:
-                  item.product.impact.carbonFootprint * quantity,
+                  item.product.environmentalData.carbonFootprint * quantity,
               };
             }
             return item;
           });
 
-          const { total, estimatedCarbonFootprint } = calculateTotals(newItems);
+          const { 
+            total, 
+            // estimatedCarbonFootprint 
+          } = calculateTotals(newItems);
 
           return {
             cart: {
               ...state.cart,
               items: newItems,
               total,
-              estimatedCarbonFootprint,
+              // estimatedCarbonFootprint,
               updatedAt: new Date(),
             },
           };

@@ -4,7 +4,7 @@ export interface ShoppingCart {
   id: string;
   items: CartItem[];
   total: number;
-  estimatedCarbonFootprint: number;
+  estimatedCarbonFootprint?: number;
   createdAt: Date;
   updatedAt: Date;
 }

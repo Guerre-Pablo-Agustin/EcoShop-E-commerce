@@ -18,6 +18,8 @@ const ShoppingCart = () => {
   const cart = useCartStore((state) => state.cart);
   const { updateQuantity, removeItem, clearCart } = useCartActions();
 
+  console.log("cart ",cart);
+
   if (cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -76,7 +78,7 @@ const ShoppingCart = () => {
                             <div className="flex gap-4">
                               <Link to={`/product/${item.product.id}`}>
                                 <img
-                                  src={item.product.image[0]}
+                                  src={item.product.imageUrl}
                                   alt={item.product.name}
                                   className="w-20 h-20 object-cover rounded-lg"
                                 />
@@ -89,12 +91,12 @@ const ShoppingCart = () => {
                                   {item.product.name}
                                 </Link>
                                 <p className="text-sm text-muted-foreground">
-                                  {item.product.category}
+                                  {item.product.categoryId}
                                 </p>
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                {/* <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                                   <Leaf className="h-3 w-3 text-primary" />
                                   <span>{item.itemCarbonFootprint.toFixed(2)} kg CO₂</span>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                           </TableCell>
@@ -106,7 +108,9 @@ const ShoppingCart = () => {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
@@ -117,7 +121,9 @@ const ShoppingCart = () => {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -162,7 +168,7 @@ const ShoppingCart = () => {
                       <div className="flex gap-3">
                         <Link to={`/product/${item.product.id}`}>
                           <img
-                            src={item.product.image[0]}
+                            src={item.product.imageUrl}
                             alt={item.product.name}
                             className="w-20 h-20 object-cover rounded-lg"
                           />
@@ -175,12 +181,14 @@ const ShoppingCart = () => {
                             {item.product.name}
                           </Link>
                           <p className="text-sm text-muted-foreground mt-1">
-                            {item.product.category}
+                            {item.product.categoryId}
                           </p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          {/* <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                             <Leaf className="h-3 w-3 text-primary" />
-                            <span>{item.itemCarbonFootprint.toFixed(2)} kg CO₂</span>
-                          </div>
+                            <span>
+                              {item.itemCarbonFootprint.toFixed(2)} kg CO₂
+                            </span>
+                          </div> */}
                         </div>
                       </div>
 
@@ -190,7 +198,9 @@ const ShoppingCart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
@@ -201,7 +211,9 @@ const ShoppingCart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -212,7 +224,9 @@ const ShoppingCart = () => {
                             <p className="text-xs text-muted-foreground">
                               €{item.unitPrice.toFixed(2)}
                             </p>
-                            <p className="font-bold">€{item.subTotal.toFixed(2)}</p>
+                            <p className="font-bold">
+                              €{item.subTotal.toFixed(2)}
+                            </p>
                           </div>
                           <Button
                             variant="ghost"
@@ -256,7 +270,9 @@ const ShoppingCart = () => {
                     <span className="text-muted-foreground">
                       Productos ({cart.items.length})
                     </span>
-                    <span className="font-medium">€{cart.total.toFixed(2)}</span>
+                    <span className="font-medium">
+                      €{cart.total.toFixed(2)}
+                    </span>
                   </div>
 
                   <div className="flex justify-between">
@@ -280,7 +296,7 @@ const ShoppingCart = () => {
                     <Leaf className="h-4 w-4" />
                     <span className="text-sm">Impacto Ambiental</span>
                   </div>
-                  <div className="space-y-1">
+                  {/* <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Huella de carbono estimada
@@ -296,16 +312,15 @@ const ShoppingCart = () => {
                         ? "Impacto ambiental moderado"
                         : "Considera productos con menor huella de carbono"}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
-              <Link to={routes.checkout}>
-                <Button className="w-full" size="lg">
-                  Proceder al pago
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
-              
+                <Link to={routes.checkout}>
+                  <Button className="w-full" size="lg">
+                    Proceder al pago
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
 
                 <div className="space-y-2 text-xs text-muted-foreground text-center pt-2">
                   <p>🔒 Pago 100% seguro</p>
