@@ -16,6 +16,7 @@ export interface User {
 export interface Customer {
   id: number;
   user: User;
+  isActive: boolean;
   shippingAddress: string;
   carbonFootprint: number;
 }

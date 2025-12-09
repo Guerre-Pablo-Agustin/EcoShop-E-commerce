@@ -17,6 +17,26 @@ import { Button } from "@/components/ui/button";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart } from "@/types/ShoppingCart.types";
+import { useAuthStore } from "@/store/auth.store";
+import { useOrderStore } from "@/store/order.store";
+import { CreateOrderDto } from "@/api/order.api";
+
+// Tipo para los detalles de la orden de PayPal
+interface PayPalOrderDetails {
+  id: string;
+  status: string;
+  purchase_units: Array<{
+    amount: {
+      value: string;
+    };
+  }>;
+  payer: {
+    email_address: string;
+    payer_id?: string;
+  };
+  backendOrderId?: string | number;
+  backendOrderNumber?: string;
+}
 
 // Configuración inicial de PayPal
 const initialOptions = {
@@ -26,13 +46,27 @@ const initialOptions = {
 };
 
 const Checkout = () => {
+  const { user } = useAuthStore();
   const cart = useCart();
-  const { clearCart } = useCartStore();
+  const { clearCart, addItem } = useCartStore();
+  const {
+    createOrder: createOrderInStore,
+    confirmOrder,
+    cancelOrder,
+    selectedOrder,
+    error: orderError,
+  } = useOrderStore();
   const [selectedPayment, setSelectedPayment] = useState("paypal");
-  const [orderDetails, setOrderDetails] = useState(null);
+  const [orderDetails, setOrderDetails] = useState<PayPalOrderDetails | null>(
+    null
+  );
+  const [backendOrderId, setBackendOrderId] = useState<string | number | null>(
+    null
+  );
   const [paymentStatus, setPaymentStatus] = useState<
     "success" | "error" | "cancelled" | null
   >(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Estados del formulario
   const [formData, setFormData] = useState({
@@ -85,7 +119,7 @@ const Checkout = () => {
   };
 
   // Crear orden de PayPal con los items del carrito
-  const createOrder = (data, actions) => {
+  const createOrder = (data: Record<string, unknown>, actions: any) => {
     // Validar que el formulario esté completo
     const requiredFields: (keyof typeof formData)[] = [
       "firstName",
@@ -143,7 +177,7 @@ const Checkout = () => {
               admin_area_2: formData.city,
               admin_area_1: formData.state,
               postal_code: formData.postalCode,
-              country_code: "AR", // Código ISO de Argentina
+              country_code: "AR",
             },
           },
         },
@@ -154,50 +188,175 @@ const Checkout = () => {
     });
   };
 
-  // Aprobar pago
-  const onApprove = async (data, actions) => {
-    try {
-      const order = await actions.order.capture();
-      console.log("Pago exitoso:", order);
-      console.log("Datos del cliente:", formData);
-      console.log("Items comprados:", cart.items);
-      console.log("Impacto ambiental:", impact);
+  // Aprobar pago - AQUÍ ES DONDE USAMOS LOS ENDPOINTS
+  const onApprove = async (data: Record<string, unknown>, actions: any) => {
+    setIsProcessing(true);
 
-      setOrderDetails(order);
+    try {
+      // Validar que el usuario esté autenticado
+      if (!user || !user.id) {
+        throw new Error("Debes estar autenticado para realizar una compra");
+      }
+
+      // Validar que el carrito no esté vacío
+      if (cart.items.length === 0) {
+        throw new Error("El carrito está vacío");
+      }
+
+      // 1. Capturar el pago de PayPal
+      const paypalOrder = await actions.order.capture();
+      console.log("✅ Pago de PayPal exitoso:", paypalOrder);
+
+      // 2. Sincronizar el carrito con el backend antes de crear la orden
+      // El backend necesita tener los items en el carrito del servidor
+      const customerId = user.id;
+      const cartStore = useCartStore.getState();
+
+      // Asegurar que el customerId esté configurado en el store
+      if (!cartStore.customerId) {
+        cartStore.setCustomerId(customerId);
+      }
+
+      console.log("🔄 Sincronizando carrito con el backend...");
+      try {
+        // Sincronizar cada item del carrito local con el backend
+        for (const item of cart.items) {
+          await addItem(item.product, item.quantity);
+        }
+        console.log("✅ Carrito sincronizado con el backend");
+      } catch (syncError) {
+        console.warn(
+          "⚠️ Error al sincronizar carrito, continuando de todas formas:",
+          syncError
+        );
+        // Continuar aunque falle la sincronización, el backend podría aceptar items en el body
+      }
+
+      // 3. CREAR LA ORDEN EN TU BACKEND
+      // Esto reduce el stock, limpia el carrito y crea la orden con estado PENDING
+
+      // Formatear la dirección de envío
+      const shippingAddressString = `${formData.street}, ${formData.city}, ${formData.state} ${formData.postalCode}, ${formData.country}`;
+
+      // Preparar el body de la petición
+      const orderBody: CreateOrderDto = {
+        shippingAddress: shippingAddressString,
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+        customerPhone: formData.phone,
+        paymentMethod: "PAYPAL",
+        paymentDetails: {
+          paypalOrderId: paypalOrder.id,
+          paypalPayerId: paypalOrder.payer?.payer_id || undefined,
+          paypalStatus: paypalOrder.status,
+          transactionId: paypalOrder.id,
+        },
+        items: cart.items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+        })),
+      };
+
+      console.log("📤 Creando orden en el backend:", {
+        customerId,
+        cartItemsCount: cart.items.length,
+      });
+
+      // Crear la orden usando el store
+      await createOrderInStore(customerId);
+
+      // Obtener el estado actualizado del store después de crear la orden
+      const currentError = useOrderStore.getState().error;
+      const currentSelectedOrder = useOrderStore.getState().selectedOrder;
+
+      // Verificar si hubo error
+      if (currentError) {
+        throw new Error(currentError);
+      }
+
+      // Obtener la orden creada del store
+      if (!currentSelectedOrder) {
+        throw new Error("No se recibió la orden del backend");
+      }
+
+      const createdOrder = currentSelectedOrder;
+      console.log("✅ Orden creada en backend:", createdOrder);
+
+      // Guardar el ID de la orden del backend
+      const orderId = createdOrder.id;
+      if (!orderId) {
+        throw new Error("No se recibió el ID de la orden del backend");
+      }
+      setBackendOrderId(orderId);
+
+      // 4. CONFIRMAR LA ORDEN (cambiar estado de PENDING a PROCESSING)
+      console.log("📤 Confirmando orden:", orderId);
+      await confirmOrder(orderId);
+
+      // Verificar si hubo error al confirmar
+      const confirmError = useOrderStore.getState().error;
+      if (confirmError) {
+        throw new Error(confirmError);
+      }
+
+      console.log("✅ Orden confirmada");
+
+      // 5. Actualizar estado en el frontend
+      setOrderDetails({
+        ...paypalOrder,
+        backendOrderId: createdOrder.id,
+        backendOrderNumber: createdOrder.orderNumber,
+      });
       setPaymentStatus("success");
 
-      // TODO: Aquí deberías enviar la información a tu backend
-      // await fetch('/api/orders', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     order,
-      //     customerData: formData,
-      //     items: cart.items,
-      //     impact: impact,
-      //   })
-      // });
-
-      // Limpiar el carrito después del pago exitoso
+      // 6. Limpiar el carrito local (el backend ya lo limpió en el servidor)
       setTimeout(() => {
         clearCart();
-      }, 3000);
+      }, 2000);
     } catch (error) {
-      console.error("Error al capturar el pago:", error);
+      console.error("❌ Error al procesar la orden:", error);
+
+      // Mostrar el mensaje de error específico al usuario
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error inesperado al procesar tu orden";
+
+      console.error("Mensaje de error:", errorMessage);
       setPaymentStatus("error");
+
+      // Si hubo error, intentar cancelar la orden en el backend
+      if (backendOrderId) {
+        try {
+          console.log("🔄 Intentando cancelar orden:", backendOrderId);
+          await cancelOrder(Number(backendOrderId));
+        } catch (cancelError) {
+          console.error("Error al cancelar orden:", cancelError);
+        }
+      }
+
+      // Mostrar alerta con el error específico
+      alert(
+        `Error: ${errorMessage}\n\nPor favor, verifica tu conexión e intenta nuevamente. Si el problema persiste, contacta al soporte.`
+      );
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   // Error en el pago
-  const onError = (err : any) => {
+  const onError = (err: any) => {
     console.error("Error en PayPal:", err);
     setPaymentStatus("error");
+    setIsProcessing(false);
   };
 
   // Cancelar pago
-  const onCancel = (data: ShoppingCart) => {
+  const onCancel = (data: Record<string, unknown>) => {
     console.log("Pago cancelado:", data);
     setPaymentStatus("cancelled");
+    setIsProcessing(false);
   };
 
   // Validar si el carrito está vacío

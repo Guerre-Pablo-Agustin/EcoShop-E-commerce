@@ -157,7 +157,6 @@ const App = () => (
                 element={<EditCategorie />}
               />
 
-
               {/* Rutas de certificaciones */}
               <Route
                 path={routes.dashboardCertifications}
@@ -172,6 +171,14 @@ const App = () => (
                 path={routes.dashboardCertificationsEditar}
                 element={<EditCertificationPage />}
               />
+
+              {/* Rutas de perfil de productos */}
+              <Route
+                path={routes.dashboardProductosNuevo}
+                element={<NewProduct />}
+              />
+
+              <Route path={routes.dashboardProductosEditar} element={<EditProduct />} />
             </Route>
 
             {/* Ruta 404 - debe ir al final */}

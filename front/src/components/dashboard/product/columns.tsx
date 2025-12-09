@@ -79,6 +79,14 @@ export const getColumns = (): ColumnDef<Product>[] => [
     },
   },
   {
+    accessorKey: "stock",
+    header: "Stock",
+    cell: ({ row }) => {
+      const product = row.original;
+      return <div className="flex items-center gap-2">{product.stock}</div>;
+    },
+  },
+  {
     accessorKey: "isActive",
     header: "Estado",
     cell: ({ row }) => {
@@ -102,41 +110,30 @@ export const getColumns = (): ColumnDef<Product>[] => [
       );
     },
   },
-  // {
-  //   accessorKey: "impact",
-  //   header: "Impacto Ambiental",
-  //   cell: ({ row }) => {
-  //     const product = row.original;
-  //     return (
-  //       <div className="flex items-center gap-2">
-  //         <div className="flex items-center text-green-600">
-  //           <Leaf className="h-4 w-4 inline-block mr-1" />
-  //           {product.impact.recyclable}%
-  //         </div>
-  //         <div className="flex items-center text-gray-600">
-  //           <div className="text-sm">CO₂</div>
-  //           {product.impact.carbonFootprint}%
-  //         </div>
-  //         <div className="flex items-center">
-  //           <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
-  //           {product.impact.waterUsage}%
-  //         </div>
-  //       </div>
-  //     );
-  //   },
-  // },
   {
-    accessorKey: "stock",
-    header: "Stock",
+    accessorKey: "impact",
+    header: "Impacto Ambiental",
     cell: ({ row }) => {
       const product = row.original;
       return (
         <div className="flex items-center gap-2">
-          {product.stock}
+          <div className="flex items-center text-green-500">
+            <Leaf className="h-4 w-4 inline-block mr-1" />
+            {product.environmentalData.recyclablePercentage}%
+          </div>
+          <div className="flex items-center text-gray-600">
+            <div className="text-sm">CO₂</div>
+            {product.environmentalData.carbonFootprint}%
+          </div>
+          <div className="flex items-center">
+            <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
+            {product.environmentalData.energyConsumption}%
+          </div>
         </div>
       );
     },
   },
+
   {
     id: "actions",
     cell: ({ row }) => {
@@ -153,13 +150,16 @@ export const getColumns = (): ColumnDef<Product>[] => [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
+              onClick={() => navigator.clipboard.writeText(String(product.id))}
             >
               Copiar ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <Link
-              to={routes.dashboardProductosEditar.replace(":id", product.id)}
+              to={routes.dashboardProductosEditar.replace(
+                ":id",
+                String(product.id)
+              )}
             >
               <DropdownMenuItem>
                 Editar <List className="ml-1 h-4 w-4" />
