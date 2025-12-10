@@ -15,6 +15,7 @@ export interface RegisterResponse {
   lastName: string;
   email: string;
   userType: string;
+  phone?: string;
   // NO tiene token - solo devuelve el usuario creado
 }
 

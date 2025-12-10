@@ -18,6 +18,7 @@ interface AuthState {
     email: string,
     password: string
   ) => Promise<void>;
+  updateUser: (updatedData: Partial<LoginResponse | RegisterResponse>) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -83,6 +84,19 @@ export const useAuthStore = create<AuthState>()(
           });
           throw error;
         }
+      },
+
+      // Update User
+      updateUser: (updatedData: Partial<LoginResponse | RegisterResponse>) => {
+        set((state) => {
+          if (!state.user) return state;
+          return {
+            user: {
+              ...state.user,
+              ...updatedData,
+            },
+          };
+        });
       },
     }),
 

@@ -11,6 +11,7 @@ export interface User {
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  phone: string;
 }
 
 export interface Customer {
@@ -19,6 +20,8 @@ export interface Customer {
   isActive: boolean;
   shippingAddress: string;
   carbonFootprint: number;
+  billingAddress: string;
+  phone: string;
 }
 
 export interface Sort {
@@ -57,6 +60,24 @@ export interface CustomerQueryParams {
   size?: number;
   sort?: string;
 }
+
+
+export interface CustomerbyEmail {
+billingAddress: string;
+carbonFootprint: number;
+createdAt: string;
+email: string;
+firstName: string;
+id: number;
+isActive: boolean;
+lastName: string;
+password: string;
+phone: string;
+shippingAddress: string;
+updatedAt: string;
+userType: "CUSTOMER" | "BRAND_ADMIN";
+}
+
 
 export const customerAPI = {
   // Obtener todos los customers con paginación
@@ -110,7 +131,7 @@ export const customerAPI = {
   },
 
   // ✅ OPTIMIZADO: Obtener un customer por email con manejo de errores mejorado
-  getByEmail: async (email: string): Promise<Customer | null> => {
+  getByEmail: async (email: string): Promise<CustomerbyEmail | null> => {
     try {
       const response = await fetch(
         `/api/customers/by-email?email=${encodeURIComponent(email)}`,
@@ -189,4 +210,29 @@ export const customerAPI = {
       throw error;
     }
   },
+
+
+   //editar customer
+   updateCustomer: async (customerId: number, customer: CustomerbyEmail): Promise<CustomerbyEmail | null> => {
+    try {
+      const response = await fetch(
+        `/api/customers/${customerId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(customer),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  },
+
 };

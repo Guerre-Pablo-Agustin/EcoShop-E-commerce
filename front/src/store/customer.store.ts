@@ -5,11 +5,12 @@ import {
   Customer,
   CustomerPageResponse,
   CustomerQueryParams,
+  CustomerbyEmail,
 } from "../api/customer.api";
 
 interface CustomerState {
   customers: Customer[];
-  currentCustomer: Customer | null;
+  currentCustomer: Customer | CustomerbyEmail | null;
   pagination: {
     totalElements: number;
     totalPages: number;
@@ -29,6 +30,7 @@ interface CustomerState {
   checkEmailExists: (email: string) => Promise<boolean>;
   clearError: () => void;
   clearCurrentCustomer: () => void;
+  updateCustomer: (customerId: number, customer: CustomerbyEmail) => Promise<void>;
 }
 
 export const useCustomerStore = create<CustomerState>()(
@@ -127,6 +129,26 @@ export const useCustomerStore = create<CustomerState>()(
           throw error;
         }
       },
+
+      // ✅ OPTIMIZADO: Actualizar un customer
+      updateCustomer: async (customerId: number, customer: CustomerbyEmail) => {
+        set({ isLoading: true, error: null });
+        try {
+          const response = await customerAPI.updateCustomer(customerId, customer);
+          set({
+            currentCustomer: response,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({
+            error: error instanceof Error ? error.message : "Error desconocido",
+            isLoading: false,
+          });
+          throw error;
+        }
+      },
+
+
 
       // Limpiar error
       clearError: () => set({ error: null }),

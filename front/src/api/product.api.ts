@@ -1,4 +1,6 @@
 import { Product } from "@/types/Product.types";
+import { API_BASE_URL } from "./config";
+
 
 export interface CreateProductDto {
   name: string;
@@ -42,7 +44,7 @@ export const productApi = {
   // Obtener producto por ID (GET)
   getById: async (id: number): Promise<Product | null> => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +66,7 @@ export const productApi = {
     product: UpdateProductDto
   ): Promise<Product | null> => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +86,7 @@ export const productApi = {
   // Eliminar producto (DELETE)
   delete: async (id: number): Promise<void> => {
     try {
-      const response = await fetch(`/api/products/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -101,7 +103,7 @@ export const productApi = {
   // Obtener todos los productos (GET)
   getAll: async (): Promise<Product[]> => {
     try {
-      const response = await fetch("/api/products", {
+      const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +122,7 @@ export const productApi = {
   // Crear producto (POST)
   create: async (product: CreateProductDto): Promise<Product | null> => {
     try {
-      const response = await fetch("/api/products", {
+      const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
