@@ -67,9 +67,10 @@ export const orderApi = {
   },
 
   // Crear nueva orden (POST)
+  // El backend crea la orden desde el carrito del cliente que ya está sincronizado
   create: async (customerId: number): Promise<Order | null> => {
     try {
-      console.log("customerId", customerId);
+      console.log("📤 Creando orden desde el carrito del cliente:", customerId);
       const response = await fetch(
         `${API_BASE_URL}/api/orders/customer/${customerId}`,
         {
@@ -77,16 +78,20 @@ export const orderApi = {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(customerId),
+          // No se envía body, el backend usa el carrito del servidor
         }
       );
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorText = await response.text();
+        console.error("❌ Error del backend:", errorText);
+        throw new Error(
+          `Failed to create order: ${response.status} ${response.statusText}`
+        );
       }
       return response.json();
     } catch (error) {
-      console.log(error);
-      return null;
+      console.error("❌ Error al crear orden:", error);
+      throw error;
     }
   },
 

@@ -3,17 +3,27 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Leaf, Heart, ShoppingBag } from "lucide-react";
-import { useCartActions } from "@/store/cart.store";
+import { useCartActions, useCartStore } from "@/store/cart.store";
 import { Product } from "@/types/Product.types";
+import { useAuthStore } from "@/store/auth.store";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const { user } = useAuthStore();
 
-  const { addItem } = useCartActions();
+  const { addItemToBackend, setCustomerId, isLoading } = useCartStore();
 
+  const addProduct = () => {
+    console.log("📦 Product ID:", product?.id);
+    console.log("👤 User ID:", user?.id);
+    if (user?.id) {
+      setCustomerId(user.id);
+      addItemToBackend(product?.id);
+    }
+  };
 
   return (
     <Card className="group overflow-hidden transition-all hover:shadow-xl border border-gray-200 rounded-2xl bg-white p-0">
@@ -71,12 +81,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           €{product.price.toFixed(2)}
         </span>
         <Button
-          onClick={() => addItem(product, 1)}
+          onClick={addProduct}
           className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2 font-medium transition-colors flex items-center gap-2"
           size="sm"
         >
           <ShoppingBag className="h-4 w-4" />
-          Añadir
+          {isLoading ? "Agregando..." : "Agregar"}
         </Button>
       </CardFooter>
     </Card>

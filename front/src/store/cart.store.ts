@@ -249,6 +249,8 @@ export const useCartStore = create<CartStore>()(
           return;
         }
 
+        console.log("Adding item to backend:", { productId, quantity });
+
         set({ isLoading: true, error: null });
         try {
           const item = await cartApi.addItem(customerId, productId, quantity);

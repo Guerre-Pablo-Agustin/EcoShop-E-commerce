@@ -79,6 +79,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   },
 
   // Crear orden
+  // El backend crea la orden desde el carrito del cliente sincronizado
   createOrder: async (customerId: number) => {
     set({ isLoading: true, error: null });
     try {
@@ -100,6 +101,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
         error: error instanceof Error ? error.message : "Error creating order",
         isLoading: false,
       });
+      throw error; // Re-lanzar el error para que Checkout pueda manejarlo
     }
   },
 

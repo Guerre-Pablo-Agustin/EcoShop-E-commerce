@@ -1,5 +1,6 @@
 import { ShoppingCart } from "@/types/ShoppingCart.types";
 import { CartItem } from "@/types/CartItem.types";
+import { API_BASE_URL } from "./config";
 
 export interface AddItemDto {
   productId: number;
@@ -25,7 +26,7 @@ export const cartApi = {
   ): Promise<CartItem | null> => {
     try {
       const response = await fetch(
-        `/api/cart/customer/${customerId}/items/${productId}`,
+        `${API_BASE_URL}/api/cart/customer/${customerId}/items/${productId}`,
         {
           method: "PUT",
           headers: {
@@ -71,15 +72,29 @@ export const cartApi = {
     quantity: number = 1
   ): Promise<CartItem | null> => {
     try {
-      const response = await fetch(`/api/cart/customer/${customerId}/items`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ productId, quantity }),
-      });
+      // Construir URL con query params: ?productId=X&quantity=Y
+      const queryString = `productId=${productId}&quantity=${quantity}`;
+      const response = await fetch(
+        `${API_BASE_URL}/api/cart/customer/${customerId}/items?${queryString}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const text = await response.text();
+        let parsed: any = text;
+        try {
+          parsed = JSON.parse(text);
+        } catch (e) {
+          // keep raw text
+        }
+        console.error("cartApi.addItem failed:", response.status, parsed);
+        throw new Error(
+          `Network response was not ok: ${response.status} - ${text}`
+        );
       }
       return response.json();
     } catch (error) {
