@@ -70,7 +70,7 @@ export const useCartStore = create<CartStore>()(
       cart: {
         id: "cart-1",
         items: [],
-        total: 0,
+        totalPrice: 0,
         estimatedCarbonFootprint: 0,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -441,7 +441,7 @@ export const useCartStore = create<CartStore>()(
 // Hooks personalizados para acceder a partes específicas del store
 export const useCart = () => useCartStore((state) => state.cart);
 export const useCartItems = () => useCartStore((state) => state.cart.items);
-export const useCartTotal = () => useCartStore((state) => state.cart.total);
+export const useCartTotal = () => useCartStore((state) => state.cart.totalPrice);
 export const useCartLoading = () => useCartStore((state) => state.isLoading);
 export const useCartError = () => useCartStore((state) => state.error);
 

@@ -26,8 +26,7 @@ import { useAuthStore } from "@/store/auth.store";
 
 const ShoppingCart = () => {
   const {user} = useAuthStore();  
-  const { cart, fetchCart, isLoading, error ,setCustomerId, increaseItemQuantity, decreaseItemQuantity, clearCartInBackend } = useCartStore();
-  const { updateQuantity, removeItem, clearCart } = useCartActions();
+  const { cart, fetchCart, isLoading, error ,setCustomerId, increaseItemQuantity, decreaseItemQuantity, removeItemFromBackend, clearCartInBackend } = useCartStore();
 
   useEffect(() => {
     if (!user) {
@@ -76,6 +75,13 @@ const ShoppingCart = () => {
   const decreaseItem = async (productId: number, e : any) => {
     e.preventDefault();
     await decreaseItemQuantity(productId);
+    fetchCart();
+  };
+
+  //borrar item
+  const removeItem = async (productId: number, e : any) => {
+    e.preventDefault();
+    await removeItemFromBackend(productId);
     fetchCart();
   };
 
@@ -211,7 +217,7 @@ const ShoppingCart = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => removeItem(item.id)}
+                              onClick={(e) => removeItem(item.product.id, e)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -290,7 +296,7 @@ const ShoppingCart = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive"
-                            onClick={() => removeItem(item.id)}
+                             onClick={(e) => removeItem(item.product.id, e)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -306,7 +312,7 @@ const ShoppingCart = () => {
             <div className="flex justify-end mt-4">
               <Button
                 variant="outline"
-                onClick={clearCart}
+                onClick={clearCartInBackend}
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-4 w-4 mr-2" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Leaf,
   User,
@@ -46,8 +46,6 @@ const initialOptions = {
 
 const Checkout = () => {
   const { user } = useAuthStore();
-  const cart = useCart();
-  const { clearCart, addItem } = useCartStore();
   const {
     createOrder: createOrderInStore,
     confirmOrder,
@@ -55,6 +53,41 @@ const Checkout = () => {
     selectedOrder,
     error: orderError,
   } = useOrderStore();
+  const { cart, fetchCart, isLoading, error ,setCustomerId,  clearCartInBackend, customerId } = useCartStore();
+
+
+  useEffect(() => {
+      if (!user) {
+        return;
+      }
+      if (user.id) {
+        setCustomerId(user.id);
+      fetchCart();
+      }
+  }, [user?.id]);
+
+  console.log("cart ", cart);
+  console.log("customerId ", customerId);
+
+   // Helpers: calcular precios cuando backend devuelve null
+  const getUnitPrice = (item: any) => {
+    return item.unitPrice ?? item.product?.price ?? 0;
+  };
+
+  const getItemSubTotal = (item: any) => {
+    return item.subTotal ?? getUnitPrice(item) * (item.quantity ?? 0);
+  };
+
+  // Forzar cálculo del total sumando los subtotales de los items
+  const computedTotal = cart?.items?.length
+    ? cart.items.reduce((s: number, it: any) => s + getItemSubTotal(it), 0)
+    : 0;
+
+
+
+
+  //estado de pago
+
   const [selectedPayment, setSelectedPayment] = useState("paypal");
   const [orderDetails, setOrderDetails] = useState<PayPalOrderDetails | null>(
     null
@@ -158,11 +191,11 @@ const Checkout = () => {
           description: `Pedido EcoShop - ${cart.items.length} producto(s)`,
           amount: {
             currency_code: "USD",
-            value: cart.total.toFixed(2),
+            value: cart.totalPrice.toFixed(2),
             breakdown: {
               item_total: {
                 currency_code: "USD",
-                value: cart.total.toFixed(2),
+                value: cart.totalPrice.toFixed(2),
               },
             },
           },
@@ -218,7 +251,10 @@ const Checkout = () => {
         items: cart.items,
       };
 
-      console.log("✅ Orden simulada en modo de prueba:", mockOrder);
+        if (customerId) {
+        await createOrderInStore(customerId);
+        }
+      // console.log("✅ Orden simulada en modo de prueba:", mockOrder);
 
       // 3. Actualizar estado en el frontend con la orden simulada
       setOrderDetails({
@@ -230,7 +266,7 @@ const Checkout = () => {
 
       // 4. Limpiar el carrito local
       console.log("🔄 Limpiando carrito local...");
-      clearCart();
+      await clearCartInBackend();
     } catch (error) {
       console.error("❌ Error al procesar la orden:", error);
 
@@ -368,7 +404,7 @@ const Checkout = () => {
               </div>
 
               <div className="flex gap-4 justify-center">
-                <Link to="/">
+                <Link to="/store">
                   <Button className="bg-emerald-600 hover:bg-emerald-700">
                     Seguir Comprando
                   </Button>
@@ -638,7 +674,7 @@ const Checkout = () => {
                           Cantidad: {item.quantity}
                         </p>
                         <p className="text-sm font-semibold text-emerald-600">
-                          ${item.subTotal.toFixed(2)}
+                         €{getItemSubTotal(item).toFixed(2)}
                         </p>
                       </div>
                     </div>
@@ -678,7 +714,7 @@ const Checkout = () => {
                     Subtotal ({cart.items.length} productos)
                   </span>
                   <span className="font-semibold">
-                    ${cart.total.toFixed(2)}
+                    ${cart.totalPrice.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -688,7 +724,7 @@ const Checkout = () => {
                 <div className="flex justify-between pt-2 border-t border-gray-200">
                   <span className="font-semibold">Total</span>
                   <span className="font-bold text-lg">
-                    ${cart.total.toFixed(2)}
+                    ${cart.totalPrice.toFixed(2)}
                   </span>
                 </div>
               </div>
