@@ -49,6 +49,10 @@ export const usePaymentStore = create<PaymentState>()(
       },
 
       createPayment: async (payload: CreatePaymentDto) => {
+        console.log(
+          "PaymentStore: createPayment llamado con payload:",
+          payload
+        );
         set({ isLoading: true, error: null });
         try {
           const p = await paymentApi.createPayment(payload);

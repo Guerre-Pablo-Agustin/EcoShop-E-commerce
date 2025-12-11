@@ -19,6 +19,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShoppingCart } from "@/types/ShoppingCart.types";
 import { useAuthStore } from "@/store/auth.store";
 import { useOrderStore } from "@/store/order.store";
+import { usePaymentStore } from "@/store/payment.store";
 
 // Tipo para los detalles de la orden de PayPal
 interface PayPalOrderDetails {
@@ -53,23 +54,31 @@ const Checkout = () => {
     selectedOrder,
     error: orderError,
   } = useOrderStore();
-  const { cart, fetchCart, isLoading, error ,setCustomerId,  clearCartInBackend, customerId } = useCartStore();
-
+  const {
+    cart,
+    fetchCart,
+    isLoading,
+    error,
+    setCustomerId,
+    clearCartInBackend,
+    customerId,
+  } = useCartStore();
+  const { createPayment } = usePaymentStore();
 
   useEffect(() => {
-      if (!user) {
-        return;
-      }
-      if (user.id) {
-        setCustomerId(user.id);
+    if (!user) {
+      return;
+    }
+    if (user.id) {
+      setCustomerId(user.id);
       fetchCart();
-      }
+    }
   }, [user?.id]);
 
   console.log("cart ", cart);
   console.log("customerId ", customerId);
 
-   // Helpers: calcular precios cuando backend devuelve null
+  // Helpers: calcular precios cuando backend devuelve null
   const getUnitPrice = (item: any) => {
     return item.unitPrice ?? item.product?.price ?? 0;
   };
@@ -82,9 +91,6 @@ const Checkout = () => {
   const computedTotal = cart?.items?.length
     ? cart.items.reduce((s: number, it: any) => s + getItemSubTotal(it), 0)
     : 0;
-
-
-
 
   //estado de pago
 
@@ -239,32 +245,62 @@ const Checkout = () => {
       const paypalOrder = await actions.order.capture();
       console.log("✅ Pago de PayPal exitoso:", paypalOrder);
 
-      // 2. Comentado temporalmente la sincronización con el backend para pruebas
-      console.log("⚠️ Modo de prueba: Saltando sincronización con el backend");
+      let backendOrderId: number | undefined;
+      let backendOrderNumber: string | undefined;
 
-      // Simular una respuesta exitosa del backend para continuar con el flujo
-      const mockOrder = {
-        id: "mock-order-123",
-        orderNumber: "MOCK-001",
-        status: "COMPLETED",
-        total: paypalOrder.purchase_units[0]?.amount?.value || "0.00",
-        items: cart.items,
-      };
+      // 2. Crear la orden en el backend
+      if (customerId) {
+        console.log("Creando orden en backend para cliente:", customerId);
+        const newOrder = await createOrderInStore(customerId);
 
-        if (customerId) {
-        await createOrderInStore(customerId);
+        if (newOrder) {
+          backendOrderId = newOrder.id;
+          backendOrderNumber = newOrder.orderNumber;
+          console.log("✅ Orden creada en backend:", newOrder);
+
+          // 3. Registrar el pago en el backend
+          const paymentData = {
+            orderId: newOrder.id,
+            amount: parseFloat(
+              paypalOrder.purchase_units[0]?.amount?.value || "0"
+            ),
+            paymentDate: new Date().toISOString(),
+          };
+
+          console.log(
+            ">> Iniciando registro de pago en backend con datos:",
+            paymentData
+          );
+          const payment = await createPayment(paymentData);
+
+          if (payment) {
+            console.log("✅ Pago registrado en backend EXITOSAMENTE:", payment);
+          } else {
+            console.error(
+              "❌ FALTO registrar el pago en backend (createPayment devolvió null)"
+            );
+            // No bloqueamos el flujo si falla el registro del pago, pero logueamos el error
+            // Podríamos considerar mostrar una advertencia o intentar reintentar
+          }
+        } else {
+          throw new Error("No se pudo crear la orden en el backend");
         }
-      // console.log("✅ Orden simulada en modo de prueba:", mockOrder);
+      } else {
+        // Fallback si no hay customerId (no debería pasar por el check de user)
+        console.warn(
+          "No hay customerId, saltando creación de orden en backend"
+        );
+      }
 
-      // 3. Actualizar estado en el frontend con la orden simulada
+      // 4. Actualizar estado en el frontend
       setOrderDetails({
         ...paypalOrder,
-        backendOrderId: mockOrder.id,
-        backendOrderNumber: mockOrder.orderNumber,
+        backendOrderId: backendOrderId,
+        backendOrderNumber: backendOrderNumber,
       });
       setPaymentStatus("success");
 
-      // 4. Limpiar el carrito local
+      // 5. Limpiar el carrito local
       console.log("🔄 Limpiando carrito local...");
       await clearCartInBackend();
     } catch (error) {
@@ -279,15 +315,9 @@ const Checkout = () => {
       console.error("Mensaje de error:", errorMessage);
       setPaymentStatus("error");
 
-      // Si hubo error, intentar cancelar la orden en el backend
-      if (backendOrderId) {
-        try {
-          console.log("🔄 Intentando cancelar orden:", backendOrderId);
-          await cancelOrder(Number(backendOrderId));
-        } catch (cancelError) {
-          console.error("Error al cancelar orden:", cancelError);
-        }
-      }
+      // Si hubo error y se creó la orden, intentar cancelarla (opcional, depende de la lógica de negocio)
+      // En este caso, si falló createOrderInStore, no hay orden que cancelar.
+      // Si falló createPayment, la orden existe pero no tiene pago registrado.
 
       // Mostrar alerta con el error específico
       alert(
@@ -674,7 +704,7 @@ const Checkout = () => {
                           Cantidad: {item.quantity}
                         </p>
                         <p className="text-sm font-semibold text-emerald-600">
-                         €{getItemSubTotal(item).toFixed(2)}
+                          €{getItemSubTotal(item).toFixed(2)}
                         </p>
                       </div>
                     </div>

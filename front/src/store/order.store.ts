@@ -16,7 +16,7 @@ interface OrderStore {
   // Actions
   fetchOrderById: (id: number) => Promise<void>;
   fetchOrdersByCustomerId: (customerId: number) => Promise<void>;
-  createOrder: (customerId: number) => Promise<void>;
+  createOrder: (customerId: number) => Promise<Order | null>;
   updateOrderStatus: (
     orderId: number,
     status: UpdateOrderStatusDto
@@ -90,11 +90,13 @@ export const useOrderStore = create<OrderStore>((set) => ({
           selectedOrder: newOrder,
           isLoading: false,
         }));
+        return newOrder;
       } else {
         set({
           error: "Failed to create order",
           isLoading: false,
         });
+        return null;
       }
     } catch (error) {
       set({
