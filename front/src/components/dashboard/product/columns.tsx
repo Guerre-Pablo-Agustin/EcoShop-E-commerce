@@ -16,9 +16,9 @@ import {
 
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "react-router-dom";
-import { Product } from "@/data/products";
 import { Badge } from "@/components/ui/badge";
 import { routes } from "@/lib/routes";
+import { Product } from "@/types/Product.types";
 
 // Función para generar las columnas con las acciones
 export const getColumns = (): ColumnDef<Product>[] => [
@@ -63,7 +63,7 @@ export const getColumns = (): ColumnDef<Product>[] => [
     header: "Producto",
   },
   {
-    accessorKey: "category",
+    accessorKey: "categoryName",
     header: "categoria",
   },
   {
@@ -79,6 +79,14 @@ export const getColumns = (): ColumnDef<Product>[] => [
     },
   },
   {
+    accessorKey: "stock",
+    header: "Stock",
+    cell: ({ row }) => {
+      const product = row.original;
+      return <div className="flex items-center gap-2">{product.stock}</div>;
+    },
+  },
+  {
     accessorKey: "isActive",
     header: "Estado",
     cell: ({ row }) => {
@@ -90,7 +98,7 @@ export const getColumns = (): ColumnDef<Product>[] => [
 
       return (
         <div className="flex items-center gap-2">
-          <div className="w-32">
+          <div className="w-8">
             <Badge
               variant="outline"
               className={`text-white px-1.5 ${statusColor(product.isActive)}`}
@@ -109,22 +117,23 @@ export const getColumns = (): ColumnDef<Product>[] => [
       const product = row.original;
       return (
         <div className="flex items-center gap-2">
-          <div className="flex items-center text-green-600">
+          <div className="flex items-center text-green-500">
             <Leaf className="h-4 w-4 inline-block mr-1" />
-            {product.impact.recyclable}%
+            {product.environmentalData.recyclablePercentage}%
           </div>
           <div className="flex items-center text-gray-600">
             <div className="text-sm">CO₂</div>
-            {product.impact.carbonFootprint}%
+            {product.environmentalData.carbonFootprint}%
           </div>
           <div className="flex items-center">
             <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
-            {product.impact.waterUsage}%
+            {product.environmentalData.energyConsumption}%
           </div>
         </div>
       );
     },
   },
+
   {
     id: "actions",
     cell: ({ row }) => {
@@ -141,13 +150,16 @@ export const getColumns = (): ColumnDef<Product>[] => [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(product.id)}
+              onClick={() => navigator.clipboard.writeText(String(product.id))}
             >
               Copiar ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <Link
-              to={routes.dashboardProductosEditar.replace(":id", product.id)}
+              to={routes.dashboardProductosEditar.replace(
+                ":id",
+                String(product.id)
+              )}
             >
               <DropdownMenuItem>
                 Editar <List className="ml-1 h-4 w-4" />

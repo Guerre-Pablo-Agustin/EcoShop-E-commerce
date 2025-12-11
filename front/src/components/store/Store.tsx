@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "../ui/button";
-import { products } from "@/data/products";
 import { ProductCard } from "../Products/ProductCard";
 import { Filter, Loader2, Recycle, Search, X } from "lucide-react";
 import { SearchBar } from "./searchBar";
-import SidebaFilterPanel from "./SidebaFilterPanel";
+import SidebarFilterPanel from "./SidebarFilterPanel";
+import { useProductStore } from "@/store/product.store";
+import { useCertificationStore } from "@/store/certification.store";
+import { useCategoryStore } from "@/store/category.store";
+import { useBrandStore } from "@/store/brand.store";
 
 export interface FilterState {
+  certifications: string[];
   materials: string[];
   origin: string;
   impact: string;
@@ -17,13 +21,25 @@ export interface FilterState {
 }
 
 export default function Store() {
+  const { products, isLoading, fetchProducts } = useProductStore();
+  const { fetchCertifications, certifications } = useCertificationStore();
+  const { fetchCategories, categories } = useCategoryStore();
+  const { fetchBrands, brands } = useBrandStore();
+
+  useEffect(() => {
+    fetchProducts();
+    fetchCertifications();
+    fetchCategories();
+    fetchBrands();
+  }, [fetchProducts, fetchCertifications, fetchCategories, fetchBrands]);
+
   const [productsFiltered, setProductsFiltered] = React.useState(products);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [activeCategory, setActiveCategory] = React.useState("Todos");
   const [searchQuery, setSearchQuery] = React.useState("");
   const [showFilterPanel, setShowFilterPanel] = React.useState(false);
   const [filters, setFilters] = React.useState<FilterState>({
     materials: [],
+    certifications: [],
     origin: "",
     impact: "",
     priceRange: "",
@@ -32,21 +48,26 @@ export default function Store() {
     brands: [],
   });
 
-  const categories = [...new Set(products.map((p) => p.category))];
+  console.log("products:", products);
+
+  // Actualizar productos filtrados cuando cambian los productos
+  useEffect(() => {
+    applyFilters(activeCategory, searchQuery, filters);
+  }, [products]);
 
   const applyFilters = (
     category: string,
     search: string,
     currentFilters: FilterState
   ) => {
-    setIsLoading(true);
-
     setTimeout(() => {
       let filtered = products;
 
       // Filtrar por categoría
       if (category !== "Todos") {
-        filtered = filtered.filter((product) => product.category === category);
+        filtered = filtered.filter(
+          (product) => product.categoryName === category
+        );
       }
 
       // Filtrar por búsqueda
@@ -55,25 +76,39 @@ export default function Store() {
           (product) =>
             product.name.toLowerCase().includes(search.toLowerCase()) ||
             product.description.toLowerCase().includes(search.toLowerCase()) ||
-            product.category.toLowerCase().includes(search.toLowerCase())
+            product.categoryId.toString().includes(search.toLowerCase())
         );
       }
 
-      // Filtrar por materiales
+      // Filtrar por certificaciones
+      if (currentFilters.certifications.length > 0) {
+        filtered = filtered.filter((product) =>
+          product.certificationIds.some((certificationId) =>
+            currentFilters.certifications.includes(String(certificationId))
+          )
+        );
+      }
+
+      // Filtrar por materiales (si los tienes en los productos)
       if (currentFilters.materials.length > 0) {
         filtered = filtered.filter((product) =>
-          product.materials.some((material) =>
-            currentFilters.materials.some((filterMaterial) =>
-              material.name.toLowerCase().includes(filterMaterial.toLowerCase())
-            )
+          currentFilters.materials.some((material) =>
+            product.description.toLowerCase().includes(material.toLowerCase())
           )
+        );
+      }
+
+      // Filtrar por marcas
+      if (currentFilters.brands.length > 0) {
+        filtered = filtered.filter((product) =>
+          currentFilters.brands.includes(String(product.brandId))
         );
       }
 
       // Filtrar por impacto ecológico
       if (currentFilters.impact) {
         filtered = filtered.filter((product) => {
-          const recyclable = product.impact.recyclable;
+          const recyclable = product.environmentalData.recyclablePercentage;
           if (currentFilters.impact === "Bajo") {
             return recyclable < 70;
           } else if (currentFilters.impact === "Medio") {
@@ -116,7 +151,6 @@ export default function Store() {
       }
 
       setProductsFiltered(filtered);
-      setIsLoading(false);
     }, 300);
   };
 
@@ -141,6 +175,7 @@ export default function Store() {
     setSearchQuery("");
     setFilters({
       materials: [],
+      certifications: [],
       origin: "",
       impact: "",
       priceRange: "",
@@ -150,6 +185,7 @@ export default function Store() {
     });
     applyFilters("Todos", "", {
       materials: [],
+      certifications: [],
       origin: "",
       impact: "",
       priceRange: "",
@@ -164,6 +200,24 @@ export default function Store() {
     applyFilters(activeCategory, searchQuery, newFilters);
   };
 
+  // Verificar si hay filtros activos
+  const hasActiveFilters =
+    searchQuery ||
+    activeCategory !== "Todos" ||
+    filters.certifications.length > 0 ||
+    filters.materials.length > 0 ||
+    filters.brands.length > 0 ||
+    filters.origin ||
+    filters.impact ||
+    filters.priceRange ||
+    filters.minPrice ||
+    filters.maxPrice;
+
+  console.log("Filters:", filters);
+  console.log("Active Category:", activeCategory);
+  console.log("Search Query:", searchQuery);
+  console.log("Products Filtered:", productsFiltered);
+
   return (
     <div className="min-h-screen bg-linear-to-b from-green-50 to-white">
       <section className="py-12">
@@ -177,13 +231,15 @@ export default function Store() {
 
           <div className="flex gap-6 relative">
             {/* Sidebar Filter Panel */}
-            <SidebaFilterPanel
+            <SidebarFilterPanel
               showFilterPanel={showFilterPanel}
               setShowFilterPanel={setShowFilterPanel}
               activeCategory={activeCategory}
               handleFilter={handleFilter}
               isLoading={isLoading}
               categories={categories}
+              certifications={certifications}
+              brands={brands}
               handleShowAll={handleShowAll}
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -216,14 +272,7 @@ export default function Store() {
                     productos encontrados
                   </p>
                 </div>
-                {(searchQuery ||
-                  activeCategory !== "Todos" ||
-                  filters.materials.length > 0 ||
-                  filters.origin ||
-                  filters.impact ||
-                  filters.priceRange ||
-                  filters.minPrice ||
-                  filters.maxPrice) && (
+                {hasActiveFilters && (
                   <button
                     onClick={handleShowAll}
                     className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center gap-1"

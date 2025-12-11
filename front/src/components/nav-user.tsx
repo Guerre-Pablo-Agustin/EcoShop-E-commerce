@@ -30,7 +30,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { useAuthStore } from "@/store/auth.store"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { routes } from "@/lib/routes"
 // import { useRouter } from "next/navigation"
 // import { useDispatch } from "react-redux"
 // import { useLogoutMutation } from "@/redux/services/authApi"
@@ -125,10 +126,12 @@ const handlerLogout = () => {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+            <Link to={routes.dashboardUsersProfile}>
               <DropdownMenuItem>
                 <BadgeCheck />
                 Account
               </DropdownMenuItem>
+              </Link>
               <DropdownMenuItem>
                 <CreditCard />
                 Billing

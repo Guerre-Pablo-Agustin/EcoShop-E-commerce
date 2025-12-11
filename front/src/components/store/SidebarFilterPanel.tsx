@@ -2,19 +2,21 @@ import { Filter, X, Leaf, ArrowRight } from "lucide-react";
 import React from "react";
 import { FilterState } from "./Store";
 
-interface SidebaFilterPanelProps {
+interface SidebarFilterPanelProps {
   showFilterPanel: boolean;
   setShowFilterPanel: (showFilterPanel: boolean) => void;
   activeCategory: string;
   handleFilter: (category: string) => void;
   handleShowAll: () => void;
   isLoading: boolean;
-  categories: string[];
+  categories: any[];
+  certifications: any[];
+  brands: any[];
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
 }
 
-const SidebaFilterPanel = ({
+const SidebarFilterPanel = ({
   showFilterPanel,
   setShowFilterPanel,
   activeCategory,
@@ -22,9 +24,11 @@ const SidebaFilterPanel = ({
   handleShowAll,
   isLoading,
   categories,
+  certifications,
+  brands,
   filters,
   onFiltersChange,
-}: SidebaFilterPanelProps) => {
+}: SidebarFilterPanelProps) => {
   const materials = ["Algodón Orgánico", "Bambú", "Reciclado", "Hemp", "Lino"];
   const origins = ["Local", "Nacional", "Europa", "Global"];
   const impacts = [
@@ -46,6 +50,14 @@ const SidebaFilterPanel = ({
       : [...filters.materials, material];
 
     onFiltersChange({ ...filters, materials: newMaterials });
+  };
+
+  const handleCertificationToggle = (certificationId: string) => {
+    const newCertifications = filters.certifications.includes(certificationId)
+      ? filters.certifications.filter((c) => c !== certificationId)
+      : [...filters.certifications, certificationId];
+
+    onFiltersChange({ ...filters, certifications: newCertifications });
   };
 
   const handleOriginChange = (origin: string) => {
@@ -79,10 +91,10 @@ const SidebaFilterPanel = ({
     onFiltersChange({ ...filters, maxPrice: value, priceRange: "" });
   };
 
-  const handleBrandToggle = (brand: string) => {
-    const newBrands = filters.brands.includes(brand)
-      ? filters.brands.filter((b) => b !== brand)
-      : [...filters.brands, brand];
+  const handleBrandToggle = (brandId: string) => {
+    const newBrands = filters.brands.includes(brandId)
+      ? filters.brands.filter((b) => b !== brandId)
+      : [...filters.brands, brandId];
 
     onFiltersChange({ ...filters, brands: newBrands });
   };
@@ -106,8 +118,71 @@ const SidebaFilterPanel = ({
 
       {/* Filter Content */}
       <div className="p-6">
+        {/* Categorías */}
+        <div className="mb-8 pb-8 border-b border-gray-200">
+          <h4 className="font-bold text-base text-gray-900 mb-4">Categorías</h4>
+          <div className="space-y-2">
+            <button
+              onClick={() => handleFilter("Todos")}
+              className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                activeCategory === "Todos"
+                  ? "bg-green-600 text-white"
+                  : "hover:bg-gray-100 text-gray-700"
+              }`}
+            >
+              Todos
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => handleFilter(category.name)}
+                className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                  activeCategory === category.name
+                    ? "bg-green-600 text-white"
+                    : "hover:bg-gray-100 text-gray-700"
+                }`}
+              >
+                {category.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Certificaciones */}
+        {certifications.length > 0 && (
+          <div className="mb-8 pb-8 border-b border-gray-200">
+            <h4 className="font-bold text-base text-gray-900 mb-4">
+              Certificaciones
+            </h4>
+            <div className="space-y-3">
+              {certifications.map((certification) => (
+                <label
+                  key={certification.id}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={filters.certifications.includes(
+                        certification.id
+                      )}
+                      onChange={() =>
+                        handleCertificationToggle(certification.id)
+                      }
+                      className="w-5 h-5 rounded border-2 border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer"
+                    />
+                  </div>
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900">
+                    {certification.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Materiales */}
-        <div className="mb-8">
+        <div className="mb-8 pb-8 border-b border-gray-200">
           <h4 className="font-bold text-base text-gray-900 mb-4">Materiales</h4>
           <div className="space-y-3">
             {materials.map((material) => (
@@ -130,6 +205,31 @@ const SidebaFilterPanel = ({
             ))}
           </div>
         </div>
+
+        {/* Marcas */}
+        {brands.length > 0 && (
+          <div className="mb-8 pb-8 border-b border-gray-200">
+            <h4 className="font-bold text-base text-gray-900 mb-4">Marcas</h4>
+            <div className="space-y-3">
+              {brands.map((brand) => (
+                <label
+                  key={brand.id}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <input
+                    type="checkbox"
+                    checked={filters.brands.includes(brand.id)}
+                    onChange={() => handleBrandToggle(brand.id)}
+                    className="w-5 h-5 rounded border-2 border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer"
+                  />
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900">
+                    {brand.name}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Origen */}
         <div className="mb-8 pb-8 border-b border-gray-200">
@@ -183,7 +283,7 @@ const SidebaFilterPanel = ({
         </div>
 
         {/* Precio */}
-        <div className="mb-8 pb-8 border-b border-gray-200">
+        <div className="mb-6">
           <h4 className="font-bold text-base text-gray-900 mb-4">Precio</h4>
           <div className="space-y-3 mb-4">
             {priceRanges.map((range) => (
@@ -230,31 +330,6 @@ const SidebaFilterPanel = ({
             </div>
           </div>
         </div>
-
-        {/* Marca - Placeholder */}
-        <div className="mb-6">
-          <h4 className="font-bold text-base text-gray-900 mb-4">Marca</h4>
-          <div className="space-y-3">
-            {["Patagonia", "Allbirds", "Veja", "Reformation", "Everlane"].map(
-              (brand) => (
-                <label
-                  key={brand}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    checked={filters.brands.includes(brand)}
-                    onChange={() => handleBrandToggle(brand)}
-                    className="w-5 h-5 rounded border-2 border-gray-300 text-green-600 focus:ring-2 focus:ring-green-500 focus:ring-offset-0 cursor-pointer"
-                  />
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900">
-                    {brand}
-                  </span>
-                </label>
-              )
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Clear Filters Button - Sticky at bottom */}
@@ -270,4 +345,4 @@ const SidebaFilterPanel = ({
   );
 };
 
-export default SidebaFilterPanel;
+export default SidebarFilterPanel;

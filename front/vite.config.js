@@ -20,8 +20,8 @@ export default defineConfig({
         target: 'http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com',
         changeOrigin: true,
         secure: false,
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+        configure: (proxy) => {
+          proxy.on('proxyReq', (req) => {
             console.log('🔄 Auth proxy:', req.method, req.url);
           });
         }
@@ -31,8 +31,8 @@ export default defineConfig({
         target: 'http://ecohouse-env.eba-vay8q3u6.us-east-1.elasticbeanstalk.com',
         changeOrigin: true,
         secure: false,
-        configure: (proxy, options) => {
-          proxy.on('proxyReq', (proxyReq, req, res) => {
+        configure: (proxy) => {
+          proxy.on('proxyReq', (req) => {
             console.log('🔄 API proxy:', req.method, req.url);
           });
         }
