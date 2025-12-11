@@ -14,7 +14,8 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { user } = useAuthStore();
 
-  const { addItemToBackend, setCustomerId, isLoading } = useCartStore();
+  const { addItemToBackend, setCustomerId, isLoading, loadingProductId } =
+    useCartStore();
 
   const addProduct = () => {
     console.log("📦 Product ID:", product?.id);
@@ -24,6 +25,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       addItemToBackend(product?.id);
     }
   };
+
+  const isAdding = loadingProductId === product.id;
 
   return (
     <Card className="group overflow-hidden transition-all hover:shadow-xl border border-gray-200 rounded-2xl bg-white p-0">
@@ -86,7 +89,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           size="sm"
         >
           <ShoppingBag className="h-4 w-4" />
-          {isLoading ? "Agregando..." : "Agregar"}
+          {isAdding ? "Agregando..." : "Agregar"}
         </Button>
       </CardFooter>
     </Card>

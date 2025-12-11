@@ -9,10 +9,12 @@ interface CartStore {
   cart: ShoppingCart;
   customerId: number | null;
   isLoading: boolean;
+  loadingProductId: number | null;
   error: string | null;
 
   // Setters
   setCustomerId: (customerId: number) => void;
+  setLoadingProductId: (productId: number | null) => void;
 
   // Local actions (mantienen compatibilidad con código existente)
   addItem: (product: Product, quantity?: number) => void;
@@ -77,10 +79,15 @@ export const useCartStore = create<CartStore>()(
       },
       customerId: null,
       isLoading: false,
+      loadingProductId: null,
       error: null,
 
       setCustomerId: (customerId: number) => {
         set({ customerId });
+      },
+
+      setLoadingProductId: (productId: number | null) => {
+        set({ loadingProductId: productId });
       },
 
       addItem: (product: Product, quantity: number = 1) => {
@@ -113,9 +120,9 @@ export const useCartStore = create<CartStore>()(
             newItems = [...state.cart.items, newItem];
           }
 
-          const { 
-            total, 
-            // estimatedCarbonFootprint 
+          const {
+            total,
+            // estimatedCarbonFootprint
           } = calculateTotals(newItems);
 
           return {
@@ -135,10 +142,10 @@ export const useCartStore = create<CartStore>()(
           const newItems = state.cart.items.filter(
             (item) => item.id !== itemId
           );
-          const { 
-            total, 
+          const {
+            total,
             // estimatedCarbonFootprint
-           } = calculateTotals(newItems);
+          } = calculateTotals(newItems);
 
           return {
             cart: {
@@ -159,11 +166,10 @@ export const useCartStore = create<CartStore>()(
             const newItems = state.cart.items.filter(
               (item) => item.id !== itemId
             );
-            const { 
-              total, 
-              // estimatedCarbonFootprint 
-            } =
-              calculateTotals(newItems);
+            const {
+              total,
+              // estimatedCarbonFootprint
+            } = calculateTotals(newItems);
 
             return {
               cart: {
@@ -189,9 +195,9 @@ export const useCartStore = create<CartStore>()(
             return item;
           });
 
-          const { 
-            total, 
-            // estimatedCarbonFootprint 
+          const {
+            total,
+            // estimatedCarbonFootprint
           } = calculateTotals(newItems);
 
           return {
@@ -251,17 +257,29 @@ export const useCartStore = create<CartStore>()(
 
         console.log("Adding item to backend:", { productId, quantity });
 
-        set({ isLoading: true, error: null });
+        // Marcar loading por producto y global
+        set({ isLoading: true, error: null, loadingProductId: productId });
         try {
           const item = await cartApi.addItem(customerId, productId, quantity);
           if (item) {
             // Refrescar el carrito completo
             await get().fetchCart();
           } else {
-            set({ error: "Failed to add item", isLoading: false });
+            set({
+              error: "Failed to add item",
+              isLoading: false,
+              loadingProductId: null,
+            });
           }
         } catch (error) {
-          set({ error: "Error adding item", isLoading: false });
+          set({
+            error: "Error adding item",
+            isLoading: false,
+            loadingProductId: null,
+          });
+        } finally {
+          // Asegurar limpieza del estado de loading
+          set({ isLoading: false, loadingProductId: null });
         }
       },
 
@@ -441,7 +459,8 @@ export const useCartStore = create<CartStore>()(
 // Hooks personalizados para acceder a partes específicas del store
 export const useCart = () => useCartStore((state) => state.cart);
 export const useCartItems = () => useCartStore((state) => state.cart.items);
-export const useCartTotal = () => useCartStore((state) => state.cart.totalPrice);
+export const useCartTotal = () =>
+  useCartStore((state) => state.cart.totalPrice);
 export const useCartLoading = () => useCartStore((state) => state.isLoading);
 export const useCartError = () => useCartStore((state) => state.error);
 
