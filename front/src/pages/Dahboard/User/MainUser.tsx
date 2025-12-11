@@ -1,37 +1,39 @@
-import Profile from '@/components/dashboard/users/profile'
-import { useAuthStore } from '@/store/auth.store'
-import { useCustomerStore } from '@/store/customer.store'
-import { Loader2 } from 'lucide-react'
-import React, { useEffect } from 'react'
+import { CustomerbyEmail } from "@/api/customer.api";
+import Profile from "@/components/dashboard/users/profile";
+import { useAuthStore } from "@/store/auth.store";
+import { useCustomerStore } from "@/store/customer.store";
+import { Loader2 } from "lucide-react";
+import React, { useEffect } from "react";
 
 const MainUser = () => {
+  const { user } = useAuthStore();
 
- const {user} = useAuthStore()
+  const { fetchCustomerByEmail, currentCustomer, isLoading } =
+    useCustomerStore();
 
- const {fetchCustomerByEmail, currentCustomer, isLoading} = useCustomerStore()
+  useEffect(() => {
+    fetchCustomerByEmail(user?.email || "");
+  }, [user]);
 
- useEffect(() => {
-    fetchCustomerByEmail(user?.email || '')
- }, [user])
+  console.log("currentCustomer", currentCustomer);
 
-
- console.log("currentCustomer", currentCustomer)
-
- if(isLoading){
-    return <div>
+  if (isLoading) {
+    return (
+      <div>
         <Loader2 className="animate-spin w-10 h-10" />
-    </div>
- }
+      </div>
+    );
+  }
 
- if(!currentCustomer){
-    return <div>Customer not found</div>
- }
+  if (!currentCustomer) {
+    return <div>Customer not found</div>;
+  }
 
   return (
     <div>
-       <Profile  customer={currentCustomer!} />
+      <Profile customer={currentCustomer as CustomerbyEmail} />
     </div>
-  )
-}
+  );
+};
 
-export default MainUser
+export default MainUser;

@@ -36,7 +36,7 @@ const ProfileFormSchema = z.object({
 });
 
 interface ProfileProps {
-  customer: CustomerbyEmail | null;
+  customer: CustomerbyEmail;
 }
 
 const Profile = ({ customer }: ProfileProps) => {
