@@ -1,7 +1,6 @@
 import { Product } from "@/types/Product.types";
 import { API_BASE_URL } from "./config";
 
-
 export interface CreateProductDto {
   name: string;
   description: string;
@@ -66,6 +65,7 @@ export const productApi = {
     product: UpdateProductDto
   ): Promise<Product | null> => {
     try {
+      // ✅ Agregado ${API_BASE_URL} y /api
       const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: "PUT",
         headers: {
@@ -86,6 +86,7 @@ export const productApi = {
   // Eliminar producto (DELETE)
   delete: async (id: number): Promise<void> => {
     try {
+      // ✅ Ya estaba bien, solo agregué ${API_BASE_URL}
       const response = await fetch(`${API_BASE_URL}/api/products/${id}`, {
         method: "DELETE",
         headers: {
@@ -103,6 +104,7 @@ export const productApi = {
   // Obtener todos los productos (GET)
   getAll: async (): Promise<Product[]> => {
     try {
+      // ✅ Corregido: era $/products, ahora ${API_BASE_URL}/api/products
       const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: "GET",
         headers: {
@@ -122,6 +124,7 @@ export const productApi = {
   // Crear producto (POST)
   create: async (product: CreateProductDto): Promise<Product | null> => {
     try {
+      // ✅ Agregado ${API_BASE_URL} y /api
       const response = await fetch(`${API_BASE_URL}/api/products`, {
         method: "POST",
         headers: {
@@ -142,7 +145,8 @@ export const productApi = {
   // Obtener productos por marca (GET)
   getByBrand: async (brandId: number): Promise<Product[]> => {
     try {
-      const response = await fetch(`/api/products/brand/${brandId}`, {
+      // ✅ Agregado ${API_BASE_URL} y /api
+      const response = await fetch(`${API_BASE_URL}/api/products/brand/${brandId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
