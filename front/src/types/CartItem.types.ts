@@ -6,5 +6,5 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   subTotal: number;
-  itemCarbonFootprint: number;
+  itemCarbonFootprint?: number;
 }

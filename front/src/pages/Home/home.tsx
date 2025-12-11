@@ -1,13 +1,22 @@
-import { products } from "@/data/products";
+
 import { Button } from "@/components/ui/button";
 import { Leaf, Heart, Shield, TrendingDown } from "lucide-react";
 import heroImage from "../../assets/hero-eco.jpg";
 import { ProductCard } from "@/components/Products/ProductCard";
 import { Link } from "react-router-dom";
 import { routes } from "@/lib/routes";
+import { useProductStore } from "@/store/product.store";
+import { useEffect } from "react";
 
 const Home = () => {
-  const categories = [...new Set(products.map((p) => p.category))];
+
+ const { products, fetchProducts } = useProductStore();
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  const categories = [...new Set(products.map((p) => p.categoryName))];
 
   return (
     <div className="min-h-screen bg-background">

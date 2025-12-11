@@ -11,12 +11,80 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useCartStore, useCartActions } from "@/store/cart.store";
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, Leaf } from "lucide-react";
+import {
+  Minus,
+  Plus,
+  Trash2,
+  ShoppingBag,
+  ArrowRight,
+  Leaf,
+  Loader2,
+} from "lucide-react";
 import { routes } from "@/lib/routes";
+import { useEffect } from "react";
+import { useAuthStore } from "@/store/auth.store";
 
 const ShoppingCart = () => {
-  const cart = useCartStore((state) => state.cart);
-  const { updateQuantity, removeItem, clearCart } = useCartActions();
+  const {user} = useAuthStore();  
+  const { cart, fetchCart, isLoading, error ,setCustomerId, increaseItemQuantity, decreaseItemQuantity, removeItemFromBackend, clearCartInBackend } = useCartStore();
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (user.id) {
+      setCustomerId(user.id);
+    fetchCart();
+    }
+  }, [user?.id]);
+
+
+  if (isLoading) {
+    return <div><Loader2 className="h-6 w-6 animate-spin" /></div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+
+  console.log("cart ", cart);
+
+  // Helpers: calcular precios cuando backend devuelve null
+  const getUnitPrice = (item: any) => {
+    return item.unitPrice ?? item.product?.price ?? 0;
+  };
+
+  const getItemSubTotal = (item: any) => {
+    return item.subTotal ?? getUnitPrice(item) * (item.quantity ?? 0);
+  };
+
+  // Forzar cálculo del total sumando los subtotales de los items
+  const computedTotal = cart?.items?.length
+    ? cart.items.reduce((s: number, it: any) => s + getItemSubTotal(it), 0)
+    : 0;
+
+  //aumentar cantidad
+  const increaseItem = async ( e : any, productId: number) => {
+    e.preventDefault();
+    await increaseItemQuantity(productId);
+    fetchCart();
+  };
+
+  //Disminuir cantidad
+  const decreaseItem = async (productId: number, e : any) => {
+    e.preventDefault();
+    await decreaseItemQuantity(productId);
+    fetchCart();
+  };
+
+  //borrar item
+  const removeItem = async (productId: number, e : any) => {
+    e.preventDefault();
+    await removeItemFromBackend(productId);
+    fetchCart();
+  };
+
 
   if (cart.items.length === 0) {
     return (
@@ -27,7 +95,8 @@ const ShoppingCart = () => {
           </div>
           <h1 className="text-3xl font-bold">Tu carrito está vacío</h1>
           <p className="text-muted-foreground text-lg">
-            Explora nuestros productos sostenibles y comienza a llenar tu carrito
+            Explora nuestros productos sostenibles y comienza a llenar tu
+            carrito
           </p>
           <Link to="/">
             <Button size="lg" className="mt-4">
@@ -39,6 +108,8 @@ const ShoppingCart = () => {
       </div>
     );
   }
+
+ 
 
   return (
     <div className="min-h-screen py-8 md:py-12">
@@ -76,7 +147,7 @@ const ShoppingCart = () => {
                             <div className="flex gap-4">
                               <Link to={`/product/${item.product.id}`}>
                                 <img
-                                  src={item.product.image[0]}
+                                  src={item.product.imageUrl}
                                   alt={item.product.name}
                                   className="w-20 h-20 object-cover rounded-lg"
                                 />
@@ -89,24 +160,26 @@ const ShoppingCart = () => {
                                   {item.product.name}
                                 </Link>
                                 <p className="text-sm text-muted-foreground">
-                                  {item.product.category}
+                                  {item.product.categoryId}
                                 </p>
-                                <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                                {/* <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                                   <Leaf className="h-3 w-3 text-primary" />
                                   <span>{item.itemCarbonFootprint.toFixed(2)} kg CO₂</span>
-                                </div>
+                                </div> */}
                               </div>
                             </div>
                           </TableCell>
 
-                          {/* Cantidad */}
+                         {/* Cantidad */}
                           <TableCell>
                             <div className="flex items-center justify-center gap-2">
                               <Button
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                onClick={(e) => decreaseItem(item.product.id, e)}
+                                 
+                                
                               >
                                 <Minus className="h-3 w-3" />
                               </Button>
@@ -117,7 +190,7 @@ const ShoppingCart = () => {
                                 variant="outline"
                                 size="icon"
                                 className="h-8 w-8"
-                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                onClick={(e) => increaseItem(e, item.product.id)}
                               >
                                 <Plus className="h-3 w-3" />
                               </Button>
@@ -126,14 +199,14 @@ const ShoppingCart = () => {
 
                           {/* Precio */}
                           <TableCell className="text-right font-medium">
-                            €{item.unitPrice.toFixed(2)}
+                            €{getUnitPrice(item).toFixed(2)}
                           </TableCell>
 
                           {/* Total */}
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-3">
                               <span className="font-bold">
-                                €{item.subTotal.toFixed(2)}
+                                €{getItemSubTotal(item).toFixed(2)}
                               </span>
                             </div>
                           </TableCell>
@@ -144,7 +217,7 @@ const ShoppingCart = () => {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={() => removeItem(item.id)}
+                              onClick={(e) => removeItem(item.product.id, e)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -162,7 +235,7 @@ const ShoppingCart = () => {
                       <div className="flex gap-3">
                         <Link to={`/product/${item.product.id}`}>
                           <img
-                            src={item.product.image[0]}
+                            src={item.product.imageUrl}
                             alt={item.product.name}
                             className="w-20 h-20 object-cover rounded-lg"
                           />
@@ -175,12 +248,14 @@ const ShoppingCart = () => {
                             {item.product.name}
                           </Link>
                           <p className="text-sm text-muted-foreground mt-1">
-                            {item.product.category}
+                            {item.product.categoryId}
                           </p>
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          {/* <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                             <Leaf className="h-3 w-3 text-primary" />
-                            <span>{item.itemCarbonFootprint.toFixed(2)} kg CO₂</span>
-                          </div>
+                            <span>
+                              {item.itemCarbonFootprint.toFixed(2)} kg CO₂
+                            </span>
+                          </div> */}
                         </div>
                       </div>
 
@@ -190,7 +265,7 @@ const ShoppingCart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={(e) => decreaseItem(item.product.id, e)}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
@@ -201,7 +276,8 @@ const ShoppingCart = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={(e) => increaseItem(e, item.product.id)
+                            }
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -210,15 +286,17 @@ const ShoppingCart = () => {
                         <div className="flex items-center gap-3">
                           <div className="text-right">
                             <p className="text-xs text-muted-foreground">
-                              €{item.unitPrice.toFixed(2)}
+                              €{getUnitPrice(item).toFixed(2)}
                             </p>
-                            <p className="font-bold">€{item.subTotal.toFixed(2)}</p>
+                            <p className="font-bold">
+                              €{getItemSubTotal(item).toFixed(2)}
+                            </p>
                           </div>
                           <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive"
-                            onClick={() => removeItem(item.id)}
+                             onClick={(e) => removeItem(item.product.id, e)}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -234,7 +312,7 @@ const ShoppingCart = () => {
             <div className="flex justify-end mt-4">
               <Button
                 variant="outline"
-                onClick={clearCart}
+                onClick={clearCartInBackend}
                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-4 w-4 mr-2" />
@@ -256,7 +334,9 @@ const ShoppingCart = () => {
                     <span className="text-muted-foreground">
                       Productos ({cart.items.length})
                     </span>
-                    <span className="font-medium">€{cart.total.toFixed(2)}</span>
+                    <span className="font-medium">
+                      €{computedTotal.toFixed(2)}
+                    </span>
                   </div>
 
                   <div className="flex justify-between">
@@ -268,7 +348,9 @@ const ShoppingCart = () => {
 
                   <div className="flex justify-between text-lg">
                     <span className="font-bold">Total</span>
-                    <span className="font-bold">€{cart.total.toFixed(2)}</span>
+                    <span className="font-bold">
+                      €{computedTotal.toFixed(2)}
+                    </span>
                   </div>
                 </div>
 
@@ -280,7 +362,7 @@ const ShoppingCart = () => {
                     <Leaf className="h-4 w-4" />
                     <span className="text-sm">Impacto Ambiental</span>
                   </div>
-                  <div className="space-y-1">
+                  {/* <div className="space-y-1">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">
                         Huella de carbono estimada
@@ -296,16 +378,15 @@ const ShoppingCart = () => {
                         ? "Impacto ambiental moderado"
                         : "Considera productos con menor huella de carbono"}
                     </p>
-                  </div>
+                  </div> */}
                 </div>
 
-              <Link to={routes.checkout}>
-                <Button className="w-full" size="lg">
-                  Proceder al pago
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </Link>
-              
+                <Link to={routes.checkout}>
+                  <Button className="w-full" size="lg">
+                    Proceder al pago
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </Link>
 
                 <div className="space-y-2 text-xs text-muted-foreground text-center pt-2">
                   <p>🔒 Pago 100% seguro</p>

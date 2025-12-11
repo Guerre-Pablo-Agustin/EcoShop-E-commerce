@@ -59,31 +59,23 @@ export const getColumns = (): ColumnDef<Customer>[] => [
     },
   },
   {
-    accessorKey: "user.firstName",
+    accessorKey: "firstName",
     header: "Nombre",
   },
   {
-    accessorKey: "user.lastName",
+    accessorKey: "lastName",
     header: "Apellido",
   },
   {
-    accessorKey: "user.email",
+    accessorKey: "email",
     header: "Email",
   },
   {
-    accessorKey: "user.updatedAt",
-    header: "ultima actualizacion",
-    cell: ({ row }) => {
-      {/*formato de fecha */}
-      const fecha = row.original.user.updatedAt;
-      return new Date(fecha).toLocaleDateString();
-    },
-  },
-  {
-    accessorKey: "user.isActive",
+    accessorKey: "isActive",
     header: "Activo",
     cell: ({ row }) => {
-      const isActive = row.original.user.isActive;
+      const isActive = row.original.isActive;
+      console.log("isActive", isActive);
       return (
         <Badge variant={isActive ? "default" : "destructive"}>
           {isActive ? "Activo" : "Inactivo"}
