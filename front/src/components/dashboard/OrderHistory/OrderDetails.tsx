@@ -252,7 +252,7 @@ export function OrderDetails({ order, children }: OrderDetailsProps) {
                         Método:
                       </span>
                       <span className="text-gray-600 capitalize">
-                        {order.payment?.paymentMethod?.toLowerCase() || "N/A"}
+                        {order.payment?.paymentMethod?.toLowerCase() || "PAYPAL"}
                       </span>
                     </div>
                     <div>
