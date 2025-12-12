@@ -197,6 +197,22 @@ const Checkout = () => {
 
   const impact = calculateImpact();
 
+  // Estado para preservar el impacto después de limpiar el carrito
+  const [finalImpact, setFinalImpact] = useState(impact);
+
+  // Actualizar finalImpact siempre que haya items en el carrito
+  // Esto asegura que tengamos el último valor válido antes de que se vacíe
+  useEffect(() => {
+    if (cart.items.length > 0) {
+      setFinalImpact(impact);
+    }
+  }, [
+    cart.items.length,
+    impact.co2Avoided,
+    impact.recyclablePercent,
+    impact.treesEquivalent,
+  ]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -412,6 +428,9 @@ const Checkout = () => {
     );
   }
 
+  console.log("orderDetails", orderDetails);
+  console.log("impact", impact);
+
   // Mostrar mensaje de éxito después del pago
   if (paymentStatus === "success") {
     return (
@@ -462,19 +481,19 @@ const Checkout = () => {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-emerald-700">
-                      {impact.co2Avoided} kg
+                      {finalImpact.co2Avoided} kg
                     </div>
                     <div className="text-xs text-gray-600">CO₂ Evitado</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-emerald-700">
-                      {impact.recyclablePercent}%
+                      {finalImpact.recyclablePercent}%
                     </div>
                     <div className="text-xs text-gray-600">Reciclable</div>
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-emerald-700">
-                      {impact.treesEquivalent}
+                      {finalImpact.treesEquivalent}
                     </div>
                     <div className="text-xs text-gray-600">Árboles</div>
                   </div>

@@ -85,7 +85,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <span className="text-2xl font-bold text-gray-900">
-          €{product.price.toFixed(2)}
+          ${product.price.toFixed(2)}
         </span>
         <Button
           onClick={addProduct}

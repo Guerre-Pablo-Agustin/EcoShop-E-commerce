@@ -55,14 +55,13 @@ export function OrderDetails({ order, children }: OrderDetailsProps) {
   };
 
   return (
-
     <Dialog>
       <DialogTrigger asChild onClick={(e) => e.stopPropagation()}>
         {children}
       </DialogTrigger>
     
-      <DialogContent className="max-w-3xl max-h-screen flex flex-col p-0 gap-0">
-        <DialogHeader className="p-6 pb-2 border-b">
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="p-6 pb-2 border-b shrink-0">
           <div className="flex items-center justify-between mr-8">
             <div className="flex items-center gap-4">
               <DialogTitle className="text-2xl font-bold">
@@ -79,8 +78,8 @@ export function OrderDetails({ order, children }: OrderDetailsProps) {
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 p-6">
-          <div className="space-y-6">
+        <ScrollArea className="flex-1 overflow-y-auto">
+          <div className="p-6 space-y-6">
             {/* Environmental Impact Section */}
             <div className="grid grid-cols-3 gap-4">
               <Card className="bg-emerald-50 border-emerald-100">
@@ -126,49 +125,39 @@ export function OrderDetails({ order, children }: OrderDetailsProps) {
                 <ShoppingBag className="w-5 h-5 text-gray-500" />
                 Productos
               </h3>
-              <ScrollArea className="h-[300px] w-full rounded-md border p-4">
-                <div className="space-y-4">
-                  {order.items.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex justify-between items-start border rounded-lg p-4 "
-                    >
-                      <div className="flex gap-4">
-                        {/* Aquí podrías agregar la imagen si estuviera disponible en item.product
-                        {item.product.imageUrl && (
-                          <img
-                            src={item.product.imageUrl[0] || "/placeholder.jpg"}
-                            alt={item.product.name}
-                            className="w-16 h-16 rounded-md object-cover"
-                          />
-                        )} */}
-                        <div>
-                          <h4 className="font-medium">
-                            {item.product?.name || item.productName}
-                          </h4>
-                          <p className="text-sm ">
-                            Cantidad: {item.quantity} x $
-                            {item.unitPrice.toFixed(2)}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <Badge
-                              variant="outline"
-                              className="text-xs border-emerald-200 text-emerald-700 bg-emerald-50"
-                            >
-                              Huella:{" "}
-                              {item.itemCarbonFootprint || item.carbonFootprint}
-                              kg
-                            </Badge>
-                          </div>
+              <div className="space-y-4">
+                {order.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex justify-between items-start border rounded-lg p-4"
+                  >
+                    <div className="flex gap-4">
+                      <div>
+                        <h4 className="font-medium">
+                          {item.product?.name || item.productName}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                          Cantidad: {item.quantity} x $
+                          {item.unitPrice.toFixed(2)}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge
+                            variant="outline"
+                            className="text-xs border-emerald-200 text-emerald-700 bg-emerald-50"
+                          >
+                            Huella:{" "}
+                            {item.itemCarbonFootprint || item.carbonFootprint}
+                            kg
+                          </Badge>
                         </div>
                       </div>
-                      <div className="font-semibold ">
-                        ${(item.subtotal || item.totalPrice || 0).toFixed(2)}
-                      </div>
                     </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                    <div className="font-semibold">
+                      ${(item.subtotal || item.totalPrice || 0).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               <div className="flex justify-end mt-4">
                 <div className="w-48 space-y-2">
@@ -200,17 +189,32 @@ export function OrderDetails({ order, children }: OrderDetailsProps) {
                       <span className="font-medium block text-gray-700">
                         Dirección:
                       </span>
-                      <span className="text-gray-600">
-                        {order.shippingAddress &&
-                        typeof order.shippingAddress === "object"
-                          ? `${(order.shippingAddress as any).street} ${
-                              (order.shippingAddress as any).number
-                            }, ${(order.shippingAddress as any).city}, ${
-                              (order.shippingAddress as any).state
-                            }, ${(order.shippingAddress as any).country}`
-                          : String(order.shippingAddress) ||
-                            "Dirección no especificada"}
-                      </span>
+                      <div className="text-gray-600 mt-1">
+                        {order.shippingAddress ? (
+                          typeof order.shippingAddress === "object" ? (
+                            <div className="space-y-0.5">
+                              <div>
+                                {(order.shippingAddress as any).street}{" "}
+                                {(order.shippingAddress as any).number}
+                              </div>
+                              <div>
+                                {(order.shippingAddress as any).city},{" "}
+                                {(order.shippingAddress as any).state}{" "}
+                                {(order.shippingAddress as any).zipCode}
+                              </div>
+                              <div>
+                                {(order.shippingAddress as any).country}
+                              </div>
+                            </div>
+                          ) : (
+                            <span>{String(order.shippingAddress)}</span>
+                          )
+                        ) : (
+                          <span className="text-gray-400 italic">
+                            Dirección no especificada
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {order.shippingDate && (
                       <div>

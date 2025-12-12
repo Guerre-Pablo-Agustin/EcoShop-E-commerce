@@ -32,6 +32,7 @@ const MainOrderHistory = () => {
 
   return (
     <div>
+      <h1 className="text-2xl font-bold mb-4 text-center">Historial de Pedidos</h1>
       <DataTable columns={getColumns()} data={customerOrders} />
     </div>
   );

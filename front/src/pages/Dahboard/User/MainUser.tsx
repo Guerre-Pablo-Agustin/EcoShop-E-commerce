@@ -31,6 +31,7 @@ const MainUser = () => {
 
   return (
     <div>
+      <h1 className="text-2xl font-bold mb-4 text-center">Datos de la cuenta</h1>
       <Profile customer={currentCustomer as CustomerbyEmail} />
     </div>
   );

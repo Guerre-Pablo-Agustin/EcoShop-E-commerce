@@ -175,7 +175,7 @@ export const cartApi = {
   // Limpiar carrito (DELETE)
   clearCart: async (customerId: number): Promise<void> => {
     try {
-      const response = await fetch(`/api/cart/customer/${customerId}`, {
+      const response = await fetch(`/api/cart/customer/${customerId}/clear`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
