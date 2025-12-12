@@ -59,12 +59,6 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
       isActive: false,
     },
     {
-      title: "Favoritos",
-      icon: Heart,
-      url: routes.dashboardUsersFavoritos,
-      isActive: false,
-    },
-    {
       title: "Historial de compras",
       icon: List,
       url: "#",

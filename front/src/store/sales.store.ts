@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { salesApi, AllSale } from "@/api/sales.api";
+import { salesApi, AllSale, SaleStatistics } from "@/api/sales.api";
 
 interface SalesState {
   data: AllSale[];
+  dataStatistics: SaleStatistics | null;
   isLoading: boolean;
   error: string | null;
 
@@ -20,6 +21,7 @@ export const useSalesStore = create<SalesState>()(
   persist(
     (set) => ({
       data: [],
+      dataStatistics: null,
       isLoading: false,
       error: null,
 
@@ -82,8 +84,8 @@ export const useSalesStore = create<SalesState>()(
       fetchStatistics: async () => {
         set({ isLoading: true, error: null });
         try {
-          const res = await salesApi.getAllStadistics();
-          if (res) set({ data: res, isLoading: false });
+          const res = await salesApi.getStatistics();
+          if (res) set({ dataStatistics: res, isLoading: false });
           else set({ error: "Failed to fetch statistics", isLoading: false });
         } catch (error) {
           set({ error: "Error fetching statistics", isLoading: false });
