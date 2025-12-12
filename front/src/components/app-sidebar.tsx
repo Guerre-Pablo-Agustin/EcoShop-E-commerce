@@ -67,7 +67,7 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
     {
       title: "Carrito",
       icon: ShoppingCart,
-      url: "#",
+      url: routes.shoppingCart,
       isActive: false,
     },
   ],
