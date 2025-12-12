@@ -26,13 +26,6 @@ const Navbar = () => {
   //datos del usuario
   const user = useAuthStore((state) => state.user);
 
-  const navigation = [
-    { name: "Mujer", href: routes.mujer },
-    { name: "Hombre", href: routes.hombre },
-    { name: "Accesorios", href: routes.accesorios },
-    { name: "Hogar", href: routes.hogar },
-  ];
-
   return (
     <>
       {/* Top Banner */}
@@ -56,24 +49,14 @@ const Navbar = () => {
                 </SheetTrigger>
                 <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                   <nav className="flex flex-col gap-4 mt-8">
-                    {navigation.map((item) => (
-                      <Link
-                        key={item.name}
-                        to={item.href}
-                        className="text-lg font-medium hover:text-primary transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
+                    <Link
+                      to={routes.store}
+                      className="block text-lg font-medium hover:text-primary transition-colors mb-3"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      Ver la Tienda
+                    </Link>
                     <div className="border-t pt-4 mt-4">
-                      <Link
-                        to={routes.store}
-                        className="block text-lg font-medium hover:text-primary transition-colors mb-3"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        Tienda
-                      </Link>
                       <Link
                         to={routes.about}
                         className="block text-lg font-medium hover:text-primary transition-colors"
@@ -100,15 +83,13 @@ const Navbar = () => {
 
               {/* Desktop Navigation */}
               <div className="hidden lg:flex items-center gap-8">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.href}
-                    className="text-sm font-medium hover:text-primary transition-colors uppercase"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                <Link
+                  to={routes.store}
+                  className="block text-lg font-medium hover:text-primary transition-colors mb-3"
+                  onClick={() => setIsOpen(false)}
+                >
+                  Tienda
+                </Link>
               </div>
             </div>
 
@@ -128,15 +109,6 @@ const Navbar = () => {
             <div className="flex items-center gap-1 md:gap-2">
               {/* Desktop Links */}
               <div className="hidden md:flex items-center gap-2">
-                <Link to={routes.store}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-xs uppercase"
-                  >
-                    Tienda
-                  </Button>
-                </Link>
                 <Link to={routes.about}>
                   <Button
                     variant="ghost"

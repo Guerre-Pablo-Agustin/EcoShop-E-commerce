@@ -12,9 +12,11 @@ import {
   Share2,
   Loader2,
 } from "lucide-react";
-import { useCartActions } from "@/store/cart.store";
+import { useCartActions, useCartStore } from "@/store/cart.store";
 import { useEffect, useState } from "react";
 import { useProductStore } from "@/store/product.store";
+import { Product } from "@/types/Product.types";
+import { toast } from "sonner";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -23,6 +25,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   const { addItem } = useCartActions();
+
+  const {addItemToBackend} = useCartStore();
 
   useEffect(() => {
     if (id) {
@@ -84,6 +88,11 @@ const ProductDetail = () => {
   );
 
   console.log("product", product);
+
+  const handleAddToCart = async (productId: number, quantity: number) => {
+    await addItemToBackend(productId, quantity);
+    toast.success("Producto agregado al carrito");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -210,14 +219,14 @@ const ProductDetail = () => {
             </p>
 
             {/* Certifications */}
-            {product.certificationIds &&
-              product.certificationIds.length > 0 && (
+            {product.certificationNames &&
+              product.certificationNames.length > 0 && (
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-3">
                     Certificaciones
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {product.certificationIds.map((cert, index) => (
+                    {product.certificationNames.map((cert, index) => (
                       <div
                         key={index}
                         className="flex items-center gap-2 px-3 py-2 rounded-lg border border-emerald-200 text-sm bg-emerald-50"
@@ -255,7 +264,7 @@ const ProductDetail = () => {
                   </button>
                 </div>
                 <button
-                  onClick={() => addItem(product, quantity)}
+                  onClick={() => handleAddToCart(product.id, quantity)}
                   disabled={product.stock === 0}
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
@@ -337,14 +346,14 @@ const ProductDetail = () => {
                     </svg>
                   </div>
                   <h4 className="font-semibold text-gray-900 text-lg">
-                    Consumo de Agua
+                   Consumo de energía
                   </h4>
                 </div>
                 <div className="text-4xl font-bold text-blue-600 mb-2">
-                  {product.environmentalData.energyConsumption} L
+                  {product.environmentalData.energyConsumption} kWh
                 </div>
                 <p className="text-sm text-gray-600">
-                  Litros de agua utilizados en la producción
+                  Energía consumida en el ciclo de vida del producto
                 </p>
               </div>
 

@@ -16,7 +16,8 @@ export interface Product {
     recyclablePercentage: number;
     notes?: string;
   };
-  certificationIds: number[];
+  certificationIds?: number[];
+  certificationNames?: string[];
   stock: number;
   brandId: number;
   categoryId: number;
