@@ -66,10 +66,10 @@ export const getColumns = (): ColumnDef<Category>[] => [
     accessorKey: "description",
     header: "Descripcion",
   },
-  {
-    accessorKey: "parentCategoryId",
-    header: "Categoria Padre",
-  },
+  // {
+  //   accessorKey: "parentCategoryId",
+  //   header: "Categoria Padre",
+  // },
   {
     id: "actions",
     cell: ({ row }) => {

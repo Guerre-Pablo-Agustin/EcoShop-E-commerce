@@ -19,6 +19,7 @@ const {certifications} = useCertificationStore()
 
   return (
     <div>
+        <h1 className="text-2xl font-bold mb-4 text-center">Lista de Certificaciones</h1>
       <DataTable columns={getColumns()} data={certifications!} />
     </div>
   )

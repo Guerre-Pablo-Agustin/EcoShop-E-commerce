@@ -106,11 +106,11 @@ export function DataTable<TData, TValue>({
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Link to={routes.dashboardMarcasNuevo} className="ml-4 cursor-pointer">
+        {/* <Link to={routes.dashboardMarcasNuevo} className="ml-4 cursor-pointer">
           <Button variant="outline" className="ml-4 cursor-pointer">
             Nuevo
           </Button>
-        </Link>
+        </Link> */}
         <button></button>
       </div>
       <div className="rounded-md border">
