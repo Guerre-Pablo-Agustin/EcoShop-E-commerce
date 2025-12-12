@@ -6,6 +6,7 @@ import { Leaf, Heart, ShoppingBag } from "lucide-react";
 import { useCartActions, useCartStore } from "@/store/cart.store";
 import { Product } from "@/types/Product.types";
 import { useAuthStore } from "@/store/auth.store";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: Product;
@@ -23,6 +24,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     if (user?.id) {
       setCustomerId(user.id);
       addItemToBackend(product?.id);
+      toast.success("Producto agregado al carrito");
+    }else{
+      toast.error("Debes iniciar sesión para agregar productos al carrito");
     }
   };
 
