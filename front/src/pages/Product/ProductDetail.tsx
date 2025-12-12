@@ -17,6 +17,9 @@ import { useEffect, useState } from "react";
 import { useProductStore } from "@/store/product.store";
 import { Product } from "@/types/Product.types";
 import { toast } from "sonner";
+import { useCustomerStore } from "@/store/customer.store";
+import { User } from "@/types/User.types";
+import { useAuthStore } from "@/store/auth.store";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -25,9 +28,8 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [imageError, setImageError] = useState(false);
   const { addItem } = useCartActions();
-
-  const {addItemToBackend} = useCartStore();
-
+  const { addItemToBackend } = useCartStore();
+  const { user } = useAuthStore();
   useEffect(() => {
     if (id) {
       setImageError(false); // Resetear error de imagen al cambiar de producto
@@ -89,7 +91,16 @@ const ProductDetail = () => {
 
   console.log("product", product);
 
-  const handleAddToCart = async (productId: number, quantity: number) => {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const handleAddToCart = async (
+    productId: number,
+    quantity: number,
+    user: any
+  ) => {
+    if (!user) {
+      toast.error("Debes iniciar sesión para agregar al carrito");
+      return;
+    }
     await addItemToBackend(productId, quantity);
     toast.success("Producto agregado al carrito");
   };
@@ -264,7 +275,7 @@ const ProductDetail = () => {
                   </button>
                 </div>
                 <button
-                  onClick={() => handleAddToCart(product.id, quantity)}
+                  onClick={() => handleAddToCart(product.id, quantity, user)}
                   disabled={product.stock === 0}
                   className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg flex items-center justify-center gap-2 transition-colors"
                 >
@@ -346,7 +357,7 @@ const ProductDetail = () => {
                     </svg>
                   </div>
                   <h4 className="font-semibold text-gray-900 text-lg">
-                   Consumo de energía
+                    Consumo de energía
                   </h4>
                 </div>
                 <div className="text-4xl font-bold text-blue-600 mb-2">
