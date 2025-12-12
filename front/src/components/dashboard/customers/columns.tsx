@@ -75,7 +75,6 @@ export const getColumns = (): ColumnDef<Customer>[] => [
     header: "Activo",
     cell: ({ row }) => {
       const isActive = row.original.isActive;
-      console.log("isActive", isActive);
       return (
         <Badge variant={isActive ? "default" : "destructive"}>
           {isActive ? "Activo" : "Inactivo"}
@@ -83,16 +82,16 @@ export const getColumns = (): ColumnDef<Customer>[] => [
       );
     },
   },
-  {
-    accessorKey: "carbonFootprint",
-    header: "Carbon Footprint",
-    cell: ({ row }) => {
-      const carbonFootprint = row.original.carbonFootprint;
-      return (
-        <Badge variant="default" className="text-center">{!carbonFootprint ? "0" : carbonFootprint}</Badge>
-      );
-    },
-  },
+  // {
+  //   accessorKey: "carbonFootprint",
+  //   header: "Carbon Footprint",
+  //   cell: ({ row }) => {
+  //     const carbonFootprint = row.original.carbonFootprint;
+  //     return (
+  //       <Badge variant="default" className="text-center">{!carbonFootprint ? "0" : carbonFootprint}</Badge>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => {

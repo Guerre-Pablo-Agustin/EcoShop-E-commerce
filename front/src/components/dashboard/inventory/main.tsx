@@ -26,6 +26,7 @@ console.log("products",products)
 
   return (
     <div>
+        <h1 className="text-2xl font-bold mb-4 text-center">Lista de Inventario</h1>
         <DataTable columns={getColumns()} data={products} />
     </div>
   )

@@ -24,6 +24,7 @@ const MainCustomers = () => {
     console.log("customers", customers);
 
   return <div>
+    <h1 className="text-2xl font-bold mb-4 text-center">Lista de Clientes</h1>
      <DataTable columns={getColumns()} data={customers!} />
   </div>;
 };
