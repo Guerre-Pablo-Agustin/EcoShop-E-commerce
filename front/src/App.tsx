@@ -16,6 +16,7 @@ import MainUser from "./pages/Dahboard/User/MainUser";
 import IndexCategories from "./pages/Dahboard/categories";
 import IndexInventory from "./pages/Dahboard/Inventory/indexInventory";
 import OrderHistoryPage from "./pages/Dahboard/OrderHistory/OrderHistoryPage";
+import MainAdminOrderHistory from "./components/dashboard/OrderHistory/mainAdminOrder";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -194,6 +195,15 @@ const App = () => (
               path={routes.dashboardOrdersHistory}
               element={<OrderHistoryPage/>}
             />
+
+
+
+              {/*Historial de ventas admin*/}
+              <Route
+                path={routes.dashboardVentas}
+                element={<MainAdminOrderHistory/>}
+              />
+
             </Route>
 
 

@@ -24,8 +24,8 @@ export interface OrderByCustomerDto {
   id: number;
   co2Saved: number;
   customerId: number;
-  deliveryDate: string;
-  ecoPointsEarned: number;
+  deliveryDate: string | null;
+  ecoPointsEarned: number | null;
   items: Array<{
     carbonFootprint: number;
     id: number;
@@ -42,25 +42,93 @@ export interface OrderByCustomerDto {
     id: number;
     paymentDate: string;
   };
-  shippingDate: string;
+  shippingDate: string | null;
   status: string;
   totalAmount: number;
   totalCarbonFootprint: number;
   shippingAddress: {
-    city: string;
-    country: string;
-    number: string;
-    state: string;
     street: string;
+    number: string;
+    city: string;
+    state: string;
+    country: string;
     zipCode: string;
-  };
+  } | null;
 }
 
 export interface UpdateOrderStatusDto {
   status: string;
 }
 
+export interface OrderQueryParams {
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
+export interface Sort {
+  sorted: boolean;
+  empty: boolean;
+  unsorted: boolean;
+}
+
+export interface Pageable {
+  pageNumber: number;
+  pageSize: number;
+  sort: Sort;
+  offset: number;
+  paged: boolean;
+  unpaged: boolean;
+}
+
+export interface OrderPageResponse {
+  totalElements: number;
+  totalPages: number;
+  pageable: Pageable;
+  size: number;
+  content: OrderByCustomerDto[];
+  number: number;
+  sort: Sort;
+  numberOfElements: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 export const orderApi = {
+  //getAll
+  getAll: async (params?: OrderQueryParams): Promise<OrderPageResponse> => {
+    const queryParams = new URLSearchParams();
+    if (params?.page !== undefined) {
+      queryParams.append("page", params.page.toString());
+    }
+    if (params?.size !== undefined) {
+      queryParams.append("size", params.size.toString());
+    }
+    if (params?.sort) {
+      queryParams.append("sort", params.sort);
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/orders?${queryParams.toString()}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  },
+
   // Obtener orden por ID (GET)
   getById: async (id: number): Promise<Order | null> => {
     try {

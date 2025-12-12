@@ -24,6 +24,15 @@ export interface OrderItem {
   carbonFootprint?: number;
 }
 
+export interface ShippingAddress {
+  street: string;
+  number: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+}
+
 export interface Order {
   id: number;
   customer: CustomerUser;
@@ -33,10 +42,10 @@ export interface Order {
   totalCarbonFootprint: number;
   co2Saved: number;
   status: OrderStatus;
-  shippingAddress: string;
+  shippingAddress: string | ShippingAddress | null;
   payment: Payment;
-  orderDate: Date;
-  shippingDate: Date;
-  deliveryDate: Date;
-  ecoPointsEarned: number;
+  orderDate: Date | string;
+  shippingDate?: Date | string | null;
+  deliveryDate?: Date | string | null;
+  ecoPointsEarned?: number | null;
 }
