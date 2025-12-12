@@ -61,7 +61,7 @@ const NAVIGATION_CONFIG: Record<"CUSTOMER" | "BRAND_ADMIN", NavItem[]> = {
     {
       title: "Historial de compras",
       icon: List,
-      url: "#",
+      url: routes.dashboardOrdersHistory,
       isActive: false,
     },
     {

@@ -65,4 +65,7 @@ export const routes = {
   //dashboard/inventory
   dashboardInventory: "/dashboard/inventory",
 
+  //dashboard/orders
+  dashboardOrdersHistory: "/dashboard/ordersHistory",
+
 };

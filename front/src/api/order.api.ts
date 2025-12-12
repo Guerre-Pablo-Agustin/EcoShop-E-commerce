@@ -20,6 +20,42 @@ export interface CreateOrderDto {
   }>;
 }
 
+export interface OrderByCustomerDto {
+  id: number;
+  co2Saved: number;
+  customerId: number;
+  deliveryDate: string;
+  ecoPointsEarned: number;
+  items: Array<{
+    carbonFootprint: number;
+    id: number;
+    productId: number;
+    productName: string;
+    quantity: number;
+    totalPrice: number;
+    unitPrice: number;
+  }>;
+  orderDate: string;
+  orderNumber: string;
+  payment: {
+    amount: number;
+    id: number;
+    paymentDate: string;
+  };
+  shippingDate: string;
+  status: string;
+  totalAmount: number;
+  totalCarbonFootprint: number;
+  shippingAddress: {
+    city: string;
+    country: string;
+    number: string;
+    state: string;
+    street: string;
+    zipCode: string;
+  };
+}
+
 export interface UpdateOrderStatusDto {
   status: string;
 }
