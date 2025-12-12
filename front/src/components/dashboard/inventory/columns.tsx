@@ -84,33 +84,28 @@ export const getColumns = (): ColumnDef<Product>[] => [
     cell: ({ row }) => {
       const product = row.original;
 
-      return <div className="flex items-center gap-2">{product.stock}</div>;
-    },
-  },
-
-  {
-    accessorKey: "stock",
-    header: "Stock",
-    cell: ({ row }) => {
-      const product = row.original;
-      // control de stock
-      //       Stock mínimo: 30 (un valor por defecto)
-      // Estado: Stock alto / medio / bajo
-      // ✔ Podés calcular automáticamente un estado visual:
-      // Stock Alto → más de 50
-      // Stock Medio → entre 20 y 50
-      // Stock Bajo → menos de 20 (en rojo)
-
-      const stockColor = (stock: number) => {
+      const getStockStatus = (stock: number) => {
         if (stock > 50) {
-          return "bg-green-500";
+          return { label: "Stock Alto", color: "bg-green-500" };
         } else if (stock > 20) {
-          return "bg-yellow-500";
+          return { label: "Stock Medio", color: "bg-yellow-500" };
         } else {
-          return "bg-red-500";
+          return { label: "Stock Bajo", color: "bg-red-500" };
         }
       };
-      return <div className="flex items-center gap-2">{product.stock}</div>;
+
+      const { label, color } = getStockStatus(product.stock);
+
+      return (
+        <div className="flex items-center gap-2">
+          <Badge
+            variant="outline"
+            className={`text-white px-2 cursor-pointer hover:${color} ${color}`}
+          >
+            {label}
+          </Badge>
+        </div>
+      );
     },
   },
   {
@@ -137,30 +132,6 @@ export const getColumns = (): ColumnDef<Product>[] => [
       );
     },
   },
-  {
-    accessorKey: "impact",
-    header: "Impacto Ambiental",
-    cell: ({ row }) => {
-      const product = row.original;
-      return (
-        <div className="flex items-center gap-2">
-          <div className="flex items-center text-green-500">
-            <Leaf className="h-4 w-4 inline-block mr-1" />
-            {product.environmentalData.recyclablePercentage}%
-          </div>
-          <div className="flex items-center text-gray-600">
-            <div className="text-sm">CO₂</div>
-            {product.environmentalData.carbonFootprint}%
-          </div>
-          <div className="flex items-center">
-            <Recycle className="h-4 w-4 text-blue-600 inline-block mr-1" />
-            {product.environmentalData.energyConsumption}%
-          </div>
-        </div>
-      );
-    },
-  },
-
   {
     id: "actions",
     cell: ({ row }) => {

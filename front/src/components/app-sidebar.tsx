@@ -32,6 +32,8 @@ import {
 import { routes } from "@/lib/routes";
 import { useAuthStore } from "@/store/auth.store";
 import { useTheme } from "@/components/theme/theme-provider";
+import { Link } from "react-router-dom";
+import { Button } from "./ui/button";
 
 // 1️⃣ Definir tipos para mejor type safety
 type NavItem = {
@@ -205,6 +207,12 @@ export default function EcoShopSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
+        <Link to={routes.store}>
+          <Button variant="ghost" className="w-full justify-start">
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            ir a la Tienda
+          </Button>
+        </Link>
         <NavUser userLogin={userLogin} />
       </SidebarFooter>
     </Sidebar>

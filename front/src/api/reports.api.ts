@@ -16,6 +16,17 @@ export interface Report {
   totalImpact?: number;
   details?: any;
   totalOrders?: number;
+  totalAmountSpent?: number;
+  categoryImpactBreakdown?: any;
+  sustainabilityPercentage?: number;
+  totalCO2Saved?: number;
+  ecoEfficiencyScore?: number;
+  totalCO2Footprint?: number;
+  averageOrderValue?: number;
+  ecoPointsEarned?: number;
+  averageOrderCO2?: number;
+  sustainableChoicesCount?: number;
+  impactLevel?: string;
 }
 
 export interface ReportStats {

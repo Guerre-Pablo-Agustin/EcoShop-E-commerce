@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Archive, Leaf, Loader2, FileText } from "lucide-react";
+import { Archive, Leaf, Loader2, FileText, DollarSign } from "lucide-react";
 import { useCustomerStore } from "@/store/customer.store";
 import { useAuthStore } from "@/store/auth.store";
 import { useReportsStore } from "@/store/reports.store";
@@ -42,10 +42,8 @@ const CustomerMain = () => {
     );
   }
 
-
   console.log("stats", stats);
   console.log("latestReport", latestReport);
-
 
   return (
     <div>
@@ -73,11 +71,10 @@ const CustomerMain = () => {
                   Activo
                 </span>
               </div>
-              <p className="text-sm  mb-1">total CO2S </p>
+              <p className="text-sm  mb-1">Puntuación de ecoeficiencia </p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 ">
-                {stats?.totalCO2Saved || 0}
+                {latestReport?.ecoEfficiencyScore || 0}
               </p>
-              <p className="text-xs  mt-1">Totales</p>
             </div>
 
             <div className=" p-6 rounded-xl border ">
@@ -85,7 +82,6 @@ const CustomerMain = () => {
                 <div className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center">
                   <Leaf className="w-5 h-5 text-green-600" />
                 </div>
-                <span className="text-sm text-green-600 font-medium">Avg</span>
               </div>
               <p className="text-sm  mb-1">total EcoPoints</p>
               <p className="text-2xl font-bold ">
@@ -98,26 +94,25 @@ const CustomerMain = () => {
                 <div className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center">
                   <Archive className="w-5 h-5 " />
                 </div>
-                <span className="text-sm text-red-600 dark:text-red-400">
-                  -3
-                </span>
               </div>
               <p className="text-sm  mb-1">total Ordenes</p>
-              <p className="text-2xl font-bold ">{latestReport?.totalOrders || 0}</p>
+              <p className="text-2xl font-bold ">
+                {latestReport?.totalOrders || 0}
+              </p>
             </div>
 
             <div className=" p-6 rounded-xl border ">
               <div className="flex items-center justify-between mb-4">
                 <div className="w-10 h-10 border border-gray-200 rounded-lg flex items-center justify-center">
-                  <span className="text-red-600 text-lg font-bold">!</span>
+                  <span className="text-red-600 text-lg font-bold">
+                    <DollarSign className="w-5 h-5 " />
+                  </span>
                 </div>
-                <span className="text-sm text-red-600 dark:text-red-400">
-                  Crítico
-                </span>
               </div>
-              <p className="text-sm  mb-1">Stock Crítico</p>
-              <p className="text-2xl font-bold ">8</p>
-              <p className="text-xs  mt-1">productos</p>
+              <p className="text-sm  mb-1">total gastado</p>
+              <p className="text-2xl font-bold ">
+                {latestReport?.totalAmountSpent || 0}
+              </p>
             </div>
           </div>
 
@@ -125,46 +120,188 @@ const CustomerMain = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
             <div className="lg:col-span-2 p-6 rounded-xl border ">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Desempeño de Impacto
                 </h2>
-                <select className="text-sm border border-gray-200 rounded-lg px-3 py-2 ">
+                <select className="text-sm border border-gray-200 dark:border-gray-700 dark:bg-gray-800 rounded-lg px-3 py-2 ">
                   <option>Últimos 6 meses</option>
                 </select>
               </div>
-              <div className="h-64 flex items-center justify-center ">
-                Gráfico de líneas - Impacto mensual
-              </div>
-            </div>
-
-            <div className=" p-6 rounded-xl border dark:border-gray-400">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
-                Último Reporte
-              </h2>
-              <div className="space-y-4">
-                {latestReport ? (
-                  <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                    <p className="text-sm font-medium mb-1">
-                      ID: {latestReport.id}
-                    </p>
-                    <p className="text-xs text-gray-500 mb-2">
-                      Generado:{" "}
-                      {new Date(
-                        latestReport.generatedDate
-                      ).toLocaleDateString()}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                        {latestReport.totalImpact
-                          ? `Impacto: ${latestReport.totalImpact}`
-                          : "Procesado"}
+              {latestReport ? (
+                <div className="space-y-6">
+                  {/* CO2 Comparación */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        CO₂ Ahorrado vs Huella
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {latestReport.totalCO2Saved} t /{" "}
+                        {latestReport.totalCO2Footprint} t
                       </span>
                     </div>
+                    <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="absolute h-full bg-linear-to-r from-green-500 to-green-600 rounded-full transition-all"
+                        style={{
+                          width: `${
+                            ((latestReport.totalCO2Saved || 0) /
+                              (latestReport.totalCO2Footprint || 1)) *
+                            100
+                          }%`,
+                        }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-white mix-blend-difference">
+                        {(
+                          ((latestReport?.totalCO2Saved || 0) /
+                            (latestReport?.totalCO2Footprint || 1)) *
+                          100
+                        ).toFixed(1)}
+                        % Ahorrado
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Puntuación Ecoeficiencia */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Puntuación Ecoeficiencia
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {latestReport.ecoEfficiencyScore} / 100
+                      </span>
+                    </div>
+                    <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="absolute h-full bg-linear-to-r from-blue-500 to-blue-600 rounded-full transition-all"
+                        style={{
+                          width: `${latestReport.ecoEfficiencyScore || 0}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* EcoPoints Progress */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        EcoPoints Ganados
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {latestReport.ecoPointsEarned} pts
+                      </span>
+                    </div>
+                    <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="absolute h-full bg-linear-to-r from-emerald-500 to-emerald-600 rounded-full transition-all"
+                        style={{
+                          width: `${Math.min(
+                            ((latestReport?.ecoPointsEarned || 0) / 100) * 100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Nivel de Impacto */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Nivel de Impacto
+                      </span>
+                      <span
+                        className={`text-xs font-semibold px-2 py-1 rounded ${
+                          latestReport.impactLevel === "ALTO"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                            : latestReport.impactLevel === "MEDIO"
+                            ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                            : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                        }`}
+                      >
+                        {latestReport.impactLevel}
+                      </span>
+                    </div>
+                    <div className="flex gap-1">
+                      {["BAJO", "MEDIO", "ALTO"].map((level, idx) => (
+                        <div
+                          key={level}
+                          className={`flex-1 h-8 rounded ${
+                            level === latestReport.impactLevel
+                              ? level === "ALTO"
+                                ? "bg-green-500"
+                                : level === "MEDIO"
+                                ? "bg-yellow-500"
+                                : "bg-red-500"
+                              : "bg-gray-200 dark:bg-gray-700"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Productos Sostenibles */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Elecciones Sostenibles
+                      </span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">
+                        {latestReport.sustainableChoicesCount} productos
+                      </span>
+                    </div>
+                    <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <div
+                        className="absolute h-full bg-linear-to-r from-teal-500 to-teal-600 rounded-full transition-all"
+                        style={{
+                          width: `${Math.min(
+                            ((latestReport?.sustainableChoicesCount || 0) /
+                              15) *
+                              100,
+                            100
+                          )}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+                  <FileText className="w-8 h-8 mb-2 opacity-50" />
+                  <p className="text-sm">
+                    No hay datos de desempeño disponibles
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Categorias con mas impacto */}
+            <div className=" p-6 rounded-xl border dark:border-gray-400">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+                Categorias con mas impacto
+              </h2>
+              <div className="space-y-4">
+                {latestReport?.categoryImpactBreakdown &&
+                Object.keys(latestReport.categoryImpactBreakdown).length > 0 ? (
+                  <div className="p-4 rounded-lg">
+                    {Object.entries(latestReport.categoryImpactBreakdown).map(
+                      ([categoryName, impact]) => (
+                        <div key={categoryName} className="mb-2 last:mb-0">
+                          <p className="text-sm font-medium mb-1">
+                            {categoryName}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Impacto: {Number(impact).toFixed(2)}
+                          </p>
+                        </div>
+                      )
+                    )}
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center h-32 text-gray-400">
                     <FileText className="w-8 h-8 mb-2 opacity-50" />
-                    <p className="text-sm">No hay reportes recientes</p>
+                    <p className="text-sm">No hay reportes</p>
                   </div>
                 )}
               </div>
@@ -183,9 +320,7 @@ const CustomerMain = () => {
                 </h3>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                {currentCustomer?.carbonFootprint
-                  ? `${currentCustomer.carbonFootprint} t`
-                  : "0 t"}
+                {latestReport?.totalCO2Footprint || 0}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 CO₂ acumulado
@@ -196,9 +331,6 @@ const CustomerMain = () => {
                   style={{ width: "75%" }}
                 ></div>
               </div>
-              <p className="text-xs text-green-600 dark:text-green-400">
-                -15% vs mes anterior
-              </p>
             </div>
 
             <div className=" p-6 rounded-xl border border-gray-200">
@@ -211,7 +343,7 @@ const CustomerMain = () => {
                 </h3>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                87%
+                {latestReport?.sustainabilityPercentage || 0} %
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 Materiales reciclados
@@ -222,9 +354,6 @@ const CustomerMain = () => {
                   style={{ width: "87%" }}
                 ></div>
               </div>
-              <p className="text-xs text-green-600 dark:text-green-400">
-                +5% vs mes anterior
-              </p>
             </div>
 
             <div className=" p-6 rounded-xl border border-gray-200">
@@ -237,7 +366,7 @@ const CustomerMain = () => {
                 </h3>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                1.2 t
+                {latestReport?.totalCO2Saved || 0} t
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                 CO₂ producción
@@ -248,9 +377,6 @@ const CustomerMain = () => {
                   style={{ width: "60%" }}
                 ></div>
               </div>
-              <p className="text-xs text-green-600 dark:text-green-400">
-                -22% vs mes anterior
-              </p>
             </div>
           </div>
         </div>

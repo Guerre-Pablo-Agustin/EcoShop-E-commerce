@@ -14,6 +14,7 @@ import IndexCustomers from "./pages/Dahboard/Customers";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import MainUser from "./pages/Dahboard/User/MainUser";
 import IndexCategories from "./pages/Dahboard/categories";
+import IndexInventory from "./pages/Dahboard/Inventory/indexInventory";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -179,7 +180,15 @@ const App = () => (
               />
 
               <Route path={routes.dashboardProductosEditar} element={<EditProduct />} />
+            {/* Rutas de inventario */}
+            
+            
+            <Route
+              path={routes.dashboardInventory}
+              element={<IndexInventory/>}
+            />
             </Route>
+
 
             {/* Ruta 404 - debe ir al final */}
             <Route path="*" element={<NotFound />} />

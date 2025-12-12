@@ -61,4 +61,8 @@ export const routes = {
   dashboardCertificationsNuevo: "/dashboard/certifications/new",
   dashboardCertificationsEditar: "/dashboard/certifications/edit/:id",
 
+
+  //dashboard/inventory
+  dashboardInventory: "/dashboard/inventory",
+
 };
