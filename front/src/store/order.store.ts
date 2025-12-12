@@ -4,6 +4,7 @@ import {
   orderApi,
   CreateOrderDto,
   UpdateOrderStatusDto,
+  OrderQueryParams,
 } from "@/api/order.api";
 
 interface OrderStore {
@@ -14,6 +15,7 @@ interface OrderStore {
   error: string | null;
 
   // Actions
+  fetchOrders: (params?: OrderQueryParams) => Promise<void>;
   fetchOrderById: (id: number) => Promise<void>;
   fetchOrdersByCustomerId: (customerId: number) => Promise<void>;
   createOrder: (customerId: number) => Promise<Order | null>;
@@ -37,6 +39,22 @@ export const useOrderStore = create<OrderStore>((set) => ({
   customerOrders: [],
   isLoading: false,
   error: null,
+
+  // Obtener todas las órdenes
+  fetchOrders: async (params?: OrderQueryParams) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await orderApi.getAll(params);
+      // Cast OrderByCustomerDto[] to Order[] because we made Order properties compatible
+      const orders = response.content as unknown as Order[];
+      set({ orders, isLoading: false });
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Error fetching orders",
+        isLoading: false,
+      });
+    }
+  },
 
   // Obtener orden por ID
   fetchOrderById: async (id: number) => {

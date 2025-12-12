@@ -20,6 +20,7 @@ import { ShoppingCart } from "@/types/ShoppingCart.types";
 import { useAuthStore } from "@/store/auth.store";
 import { useOrderStore } from "@/store/order.store";
 import { usePaymentStore } from "@/store/payment.store";
+import { useCustomerStore } from "@/store/customer.store";
 
 // Tipo para los detalles de la orden de PayPal
 interface PayPalOrderDetails {
@@ -65,6 +66,8 @@ const Checkout = () => {
   } = useCartStore();
   const { createPayment } = usePaymentStore();
 
+  const { fetchCustomerByEmail, currentCustomer } = useCustomerStore();
+
   useEffect(() => {
     if (!user) {
       return;
@@ -77,6 +80,17 @@ const Checkout = () => {
 
   console.log("cart ", cart);
   console.log("customerId ", customerId);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+    if (user.id) {
+      fetchCustomerByEmail(user.email);
+    }
+  }, [user?.id]);
+
+  console.log("currentCustomer ", currentCustomer);
 
   // Helpers: calcular precios cuando backend devuelve null
   const getUnitPrice = (item: any) => {
@@ -106,17 +120,51 @@ const Checkout = () => {
   >(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Función para parsear la dirección
+  const parseShippingAddress = (address: string) => {
+    if (!address)
+      return { street: "", city: "", state: "", postalCode: "", country: "" };
+
+    // Ejemplo: "123 Main Street, Los Angeles, CA, USA"
+    const parts = address.split(",").map((part) => part.trim());
+
+    return {
+      street: parts[0] || "",
+      city: parts[1] || "",
+      state: parts[2] || "",
+      country: parts[3] || "",
+    };
+  };
+
   // Estados del formulario
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    street: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "Argentina",
+  const [formData, setFormData] = useState(() => {
+    const addressParts = parseShippingAddress(
+      currentCustomer?.shippingAddress || ""
+    );
+
+    return {
+      firstName: currentCustomer
+        ? "firstName" in currentCustomer
+          ? currentCustomer.firstName
+          : currentCustomer.user?.firstName || ""
+        : "",
+      lastName: currentCustomer
+        ? "lastName" in currentCustomer
+          ? currentCustomer.lastName
+          : currentCustomer.user?.lastName || ""
+        : "",
+      email: currentCustomer
+        ? "email" in currentCustomer
+          ? currentCustomer.email
+          : currentCustomer.user?.email || ""
+        : "",
+      phone: currentCustomer?.phone || "",
+      street: addressParts.street,
+      city: addressParts.city,
+      state: addressParts.state,
+      postalCode: currentCustomer?.postalCode || "",
+      country: addressParts.country || "Argentina",
+    };
   });
 
   // Cálculos de impacto basados en el carrito real
@@ -692,7 +740,7 @@ const Checkout = () => {
                   {cart.items.map((item) => (
                     <div key={item.product.id} className="flex gap-3">
                       <img
-                        src={item.product.imageUrl?.[0] || "/placeholder.jpg"}
+                        src={item.product.imageUrl || "/placeholder.jpg"}
                         alt={item.product.name}
                         className="w-16 h-16 object-cover rounded"
                       />

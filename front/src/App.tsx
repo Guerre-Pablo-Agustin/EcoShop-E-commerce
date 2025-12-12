@@ -15,6 +15,8 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import MainUser from "./pages/Dahboard/User/MainUser";
 import IndexCategories from "./pages/Dahboard/categories";
 import IndexInventory from "./pages/Dahboard/Inventory/indexInventory";
+import OrderHistoryPage from "./pages/Dahboard/OrderHistory/OrderHistoryPage";
+import MainAdminOrderHistory from "./components/dashboard/OrderHistory/mainAdminOrder";
 
 // Lazy loading de páginas públicas
 const Index = lazy(() => import("./pages/Index"));
@@ -182,11 +184,26 @@ const App = () => (
               <Route path={routes.dashboardProductosEditar} element={<EditProduct />} />
             {/* Rutas de inventario */}
             
-            
+            {/*Inventario*/ }
             <Route
               path={routes.dashboardInventory}
               element={<IndexInventory/>}
             />
+
+            {/*Historial de ventas usuario*/}
+            <Route
+              path={routes.dashboardOrdersHistory}
+              element={<OrderHistoryPage/>}
+            />
+
+
+
+              {/*Historial de ventas admin*/}
+              <Route
+                path={routes.dashboardVentas}
+                element={<MainAdminOrderHistory/>}
+              />
+
             </Route>
 
 
