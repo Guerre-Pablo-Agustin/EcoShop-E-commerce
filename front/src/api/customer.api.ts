@@ -22,6 +22,7 @@ export interface Customer {
   carbonFootprint: number;
   billingAddress: string;
   phone: string;
+  postalCode?: string;
 }
 
 export interface Sort {
@@ -61,23 +62,22 @@ export interface CustomerQueryParams {
   sort?: string;
 }
 
-
 export interface CustomerbyEmail {
-billingAddress: string;
-carbonFootprint: number;
-createdAt: string;
-email: string;
-firstName: string;
-id: number;
-isActive: boolean;
-lastName: string;
-password: string;
-phone: string;
-shippingAddress: string;
-updatedAt: string;
-userType: "CUSTOMER" | "BRAND_ADMIN";
+  billingAddress: string;
+  carbonFootprint: number;
+  createdAt: string;
+  email: string;
+  firstName: string;
+  id: number;
+  isActive: boolean;
+  lastName: string;
+  password: string;
+  phone: string;
+  shippingAddress: string;
+  postalCode?: string;
+  updatedAt: string;
+  userType: "CUSTOMER" | "BRAND_ADMIN";
 }
-
 
 export const customerAPI = {
   // Obtener todos los customers con paginación
@@ -211,20 +211,19 @@ export const customerAPI = {
     }
   },
 
-
-   //editar customer
-   updateCustomer: async (customerId: number, customer: CustomerbyEmail): Promise<CustomerbyEmail | null> => {
+  //editar customer
+  updateCustomer: async (
+    customerId: number,
+    customer: CustomerbyEmail
+  ): Promise<CustomerbyEmail | null> => {
     try {
-      const response = await fetch(
-        `/api/customers/${customerId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(customer),
-        }
-      );
+      const response = await fetch(`/api/customers/${customerId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(customer),
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -234,5 +233,4 @@ export const customerAPI = {
       return null;
     }
   },
-
 };
